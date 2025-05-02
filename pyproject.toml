@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "zenithgui"
+version = "0.1.0"
+description = ""
+authors = ["vinicius-arg <j.vin7cius@gmail.com>", "Jvictor-19 <victor.pereira@dcomp.ufs.br>"]
+readme = "README.md"
+packages = [{ include = "zenithgui", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+dotenv = "^0.9.9"
+
+[tool.poetry.scripts]
+zenithgui = "zenithgui.main:main"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
