@@ -12,11 +12,9 @@
 - [ ] Esboço de telas da aplicação
 - [ ] ...
 
-## Colaboração
+## Requisitos e colaboração
 
 Abaixo estão as instruções de como configurar o ambiente, instalar as dependências e colaborar com o projeto.
-
-## Requisitos
 
 Para garantir o uso do mesmo ambiente de desenvolvimento são utilizados **pyenv** e **Poetry**.
 
