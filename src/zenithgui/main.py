@@ -1,14 +1,17 @@
 import sys
 
 from zenithgui import config
-from PyQt6.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication
 
-from view.main_window import MainWindow
+from zenithgui.view.main_window import MainWindow
 
 def main():
     app = QApplication(sys.argv)
 
-    main_window = MainWindow()
+    width, height = 800, 600
+    screen = QApplication.primaryScreen().geometry()
+
+    main_window = MainWindow(screen, width, height)
     main_window.show()
     sys.exit(app.exec())
 
