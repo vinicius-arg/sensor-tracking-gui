@@ -9,8 +9,31 @@
 
 ### Interface Gráfica
 
-- [ ] Esboço de telas da aplicação
-- [ ] ...
+- [x] Esboço das telas da aplicação
+- [ ] Tela inicial
+- [ ] Reconhecimento de porta USB em tempo de execução
+- [ ] Procedimento de conexão com LoRa
+- [ ] Exibição de dados de estado da conexão
+- [ ] Procedimento de reconhecimento/adição de sensores
+- Botão para atualização de lista de sensores detectados 
+- [ ] Tela principal (todos os sensores)
+- [ ] Barra lateral de navegação
+- [ ] Botões de início/parada
+- [ ] Salvamento de dados
+- [ ] Seleção de informações importantes
+- [ ] Geração de gráficos (threading)
+- [ ] Tela exclusiva de sensor
+- [ ] Captação e organização de informações gerais
+- [ ] Interface com o módulo de comunicação com LoRa
+- [ ] Tratamento de erros
+
+## Execução
+
+Para executar a aplicação, execute no terminal o seguinte script:
+```bash
+poetry run zenithgui
+```
+O poetry cuidará dos arquivos de entrada e quaisquer dependências.
 
 ## Requisitos e colaboração
 
@@ -20,7 +43,7 @@ Para garantir o uso do mesmo ambiente de desenvolvimento são utilizados **pyenv
 
 ### 1. Como usar o **pyenv** no projeto
 
-O **pyenv** é uma ferramenta que facilita o gerenciamento de versões do Python, permitindo que cada projeto use uma versão específica.
+O **pyenv** é uma ferramenta que facilita o gerenciamento de versões do Python, possibilitando que todos usem a mesma versão no projeto.
 
 #### Passos para instalar e configurar o **pyenv**:
 
@@ -35,12 +58,14 @@ O **pyenv** é uma ferramenta que facilita o gerenciamento de versões do Python
    - O projeto utiliza uma versão específica do Python, que pode ser verificada no arquivo `pyproject.toml`. Para instalar a versão necessária:
      ```bash
      pyenv install <versão_do_python>
+     # Exemplo: pyenv install 3.10
      ```
 
 3. **Configurar o pyenv no diretório do projeto**:
    - Navegue até o diretório do projeto e defina a versão do Python:
      ```bash
      pyenv local <versão_do_python>
+     # Exemplo: pyenv local 3.10
      ```
    Isso criará um arquivo `.python-version` no diretório do projeto, garantindo que todos os colaboradores utilizem a mesma versão.
 
@@ -73,6 +98,12 @@ O **Poetry** é uma ferramenta para gerenciamento de pacotes e dependências no 
 Se você precisar adicionar uma nova dependência, use o comando:
 ```bash
 poetry add <nome_da_dependência>
+# Exemplo: poetry add pyqt6
+```
+Para remover alguma dependência da lista de pacotes do .toml pode ser executado o comando:
+```bash
+poetry remove <nome_da_dependência>
+# Exemplo: poetry remove pyqt6
 ```
 
 ### 3. Como criar novos pacotes no projeto:
@@ -85,11 +116,11 @@ Passos para criar novos pacotes:
 
 Determine em qual módulo ou diretório o novo pacote será criado. Por exemplo, se o pacote for relacionado à comunicação LoRa, ele deve ser criado em src/zenithgui/communication.
 
-2. **Criar o diretório e o arquivo ```bash __init__```.py:**
+2. **Criar o diretório e o arquivo `__init__.py`:**
 
-O arquivo ```bash __init__```.py transforma um diretório em um pacote Python. Crie esse arquivo para que o Python reconheça o diretório como um pacote.
+O arquivo `__init__.py` transforma um diretório em um pacote Python. Crie esse arquivo para que o Python reconheça o diretório como um pacote.
 
-Exemplo:
+Exemplo para criação de novo pacote e arquivo de inicialização:
 
 ```bash
 mkdir src/zenithgui/novopacote
@@ -122,11 +153,11 @@ Como usar o arquivo .env:
 
 O arquivo .env deve conter as variáveis de ambiente do projeto, com os valores específicos para o seu ambiente.
 
-Um exemplo de .env está no diretório do projeto nomeado como ```bash .env-example```
+Um exemplo de .env está no diretório do projeto nomeado como `.env-example`
 
 2. **Como carregar as variáveis de ambiente:**
 
-No código Python, use a biblioteca python-dotenv para carregar as variáveis do arquivo .env:
+No código Python, use a biblioteca `python-dotenv` para carregar as variáveis do arquivo .env:
 
 ```bash
 from dotenv import load_dotenv
