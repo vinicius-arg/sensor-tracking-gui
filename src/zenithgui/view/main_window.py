@@ -1,4 +1,6 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
+from PyQt5.QtGui import QIcon
+
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
 
@@ -6,11 +8,12 @@ def align_center(screen, width, height):
     return ((screen.width() - width) // 2, (screen.height() - height) // 2)
 
 class MainWindow(QMainWindow):
-    def __init__(self, screen, width, height):
+    def __init__(self, screen, width, height, icon_path):
         super().__init__()
         x, y = align_center(screen, width, height)
         self.setWindowTitle("Zenith GUI")
         self.setGeometry(x, y, width, height)
+        self.setWindowIcon(QIcon(icon_path))
 
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack) 
