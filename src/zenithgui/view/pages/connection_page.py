@@ -1,11 +1,13 @@
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class ConnectionPage(QWidget):
     def __init__(self):
         super().__init__()
         self.setAutoFillBackground(True)
+
+        self.connection_requested = pyqtSignal()
 
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
@@ -46,4 +48,7 @@ class ConnectionPage(QWidget):
         self.setLayout(main_layout)
 
     def _connect_signals(self):
-        ...
+        self.connect_btn.clicked.connect(self._handle_connect_btn_click)
+
+    def _handle_connect_btn_click(self):
+        print("clicked")
