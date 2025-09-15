@@ -18,32 +18,28 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack) 
 
+        # Criação de páginas
         self.connection_page = ConnectionPage()
         self.dashboard_page = DashboardPage()
 
+        # Adição das páginas à pilha
         self.stack.addWidget(self.connection_page)
         self.stack.addWidget(self.dashboard_page)
 
-# Exemplo de múltiplas telas do GPT:
-# Cria o QStackedWidget
-# self.stack = QStackedWidget()
-# self.setCentralWidget(self.stack)
+        self._promote_signals()
 
-# # Adiciona as telas
-# self.dashboard_page = DashboardPage()
-# self.settings_page = SettingsPage()
+    def _promote_signals(self):
+        """Torna sinais de páginas internas à camada view visíveis a camadas superiores
+        da aplicação. Reduz acoplamento."""
 
-# self.stack.addWidget(self.dashboard_page)
-# self.stack.addWidget(self.settings_page)
+        self.connection_requested = self.connection_page.connection_requested
 
-# # Toolbar para navegação
-# toolbar = QToolBar("Navigation")
-# self.addToolBar(toolbar)
+    def goto_dashboard_page(self):
+        self.stack.setCurrentWidget(self.dashboard_page)
 
-# dashboard_action = QAction("Dashboard", self)
-# dashboard_action.triggered.connect(lambda: self.stack.setCurrentWidget(self.dashboard_page))
-# toolbar.addAction(dashboard_action)
-
-# settings_action = QAction("Configurações", self)
-# settings_action.triggered.connect(lambda: self.stack.setCurrentWidget(self.settings_page))
-# toolbar.addAction(settings_action)
+    def show_connection_result(self, connection_ok):
+        # TODO Implementar janela de diálogo
+        if connection_ok:
+            print("Conexao bem sucedida.")
+        else:
+            print('Conexao falhou')

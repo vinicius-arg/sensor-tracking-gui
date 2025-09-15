@@ -1,8 +1,10 @@
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class ConnectionPage(QWidget):
+    connection_requested = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setAutoFillBackground(True)
@@ -15,7 +17,6 @@ class ConnectionPage(QWidget):
         self._create_layouts()
         self._connect_signals()
 
-
     def _create_widgets(self):
         # Widgets do lado esquerdo
         self.btn_label = QLabel("Connect to LoRa")
@@ -25,7 +26,6 @@ class ConnectionPage(QWidget):
 
         # Widgets do lado direito
         self.label = QLabel("Adicionar botões de sensores...")
-        ...
 
     def _create_layouts(self):
         left_layout = QVBoxLayout()
@@ -46,4 +46,4 @@ class ConnectionPage(QWidget):
         self.setLayout(main_layout)
 
     def _connect_signals(self):
-        ...
+        self.connect_btn.clicked.connect(self.connection_requested.emit)
