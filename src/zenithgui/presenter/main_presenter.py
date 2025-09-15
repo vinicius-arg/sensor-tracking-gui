@@ -1,0 +1,21 @@
+from zenithgui.model.main_model import MainModel
+from zenithgui.view.main_window import MainWindow
+
+class MainPresenter:
+    def __init__(self, model: MainModel, view: MainWindow):
+        self.model = model
+        self.view = view
+
+        self._connect_signals()
+
+    def _connect_signals(self):
+        self.view.connection_requested.connect(self._handle_connection_request)
+
+    def _handle_connection_request(self):
+        port = "COM3"
+        success, message = self.model.connect_to_lora(port)
+
+        self.view.show_connection_result(success, message)
+
+        if success:
+            self.view.goto_dashboard_page()

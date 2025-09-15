@@ -1,0 +1,19 @@
+struct data = {
+    circuit_on,
+    mpu_on,
+    bmp_on,
+    gps_on,
+    sd_on,
+    temperature, 
+    acceleration_x,
+    acceleration_y,
+    acceleration_z,
+    gyro_x,
+    gyro_y,
+    gyro_z,
+    pressure, 
+    height,
+    latitude, 
+    longitude, 
+    speed_xy
+}
