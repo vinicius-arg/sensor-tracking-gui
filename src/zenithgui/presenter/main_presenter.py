@@ -12,9 +12,10 @@ class MainPresenter:
         self.view.connection_requested.connect(self._handle_connection_request)
 
     def _handle_connection_request(self):
-        connection_succeeded = self.model.connect_to_lora()
+        port = "COM3"
+        success, message = self.model.connect_to_lora(port)
 
-        self.view.show_connection_result(connection_succeeded)
+        self.view.show_connection_result(success, message)
 
-        if connection_succeeded:
+        if success:
             self.view.goto_dashboard_page()

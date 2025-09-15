@@ -22,8 +22,8 @@ def main():
     screen = QApplication.primaryScreen().geometry()
 
     # Definição das camadas da aplicação 
-    main_window = MainWindow(screen, width, height, str(icon_path.resolve()))
     model = MainModel()
+    main_window = MainWindow(screen, width, height, str(icon_path.resolve()))
     presenter = MainPresenter(model=model, view=main_window)
 
     main_window.setStyleSheet(style)

@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 from PyQt5.QtGui import QIcon
 
+from zenithgui.view.custom_msg_box import MessageWindow
+
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
 
@@ -37,9 +39,6 @@ class MainWindow(QMainWindow):
     def goto_dashboard_page(self):
         self.stack.setCurrentWidget(self.dashboard_page)
 
-    def show_connection_result(self, connection_ok):
-        # TODO Implementar janela de diálogo
-        if connection_ok:
-            print("Conexao bem sucedida.")
-        else:
-            print('Conexao falhou')
+    def show_connection_result(self, success, message):
+        dlg = MessageWindow("Information", message, success)
+        dlg.exec_()

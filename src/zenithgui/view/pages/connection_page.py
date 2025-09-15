@@ -25,6 +25,7 @@ class ConnectionPage(QWidget):
         self.connect_btn.setObjectName("LoRaConnectButton")
 
         # Widgets do lado direito
+        # TODO Modificar para escolher porta serial
         self.label = QLabel("Adicionar botões de sensores...")
 
     def _create_layouts(self):

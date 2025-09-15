@@ -1,4 +1,4 @@
 class MainModel():
-    def connect_to_lora(self):
+    def connect_to_lora(self, port):
         # TODO Implementar
-        return True
+        return True, "msg"
