@@ -1,6 +1,6 @@
-from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
-from PyQt5.QtCore import Qt
+from PyQt6.QtGui import QPalette, QColor
+from PyQt6.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton
+from PyQt6.QtCore import Qt
 
 class ConnectionPage(QWidget):
     def __init__(self):
