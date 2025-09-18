@@ -10,11 +10,14 @@ class MainPresenter:
 
     def _connect_signals(self):
         self.view.connection_requested.connect(self._handle_connection_request)
+        self.view.available_ports_requested.connect(self._handle_ports_request)
 
-    def _handle_connection_request(self):
-        port = "COM3"
-        success, message = self.model.connect_to_lora(port)
+    def _handle_ports_request(self):
+        available_ports = self.model.list_available_ports()
+        self.view.load_available_ports(available_ports)
 
+    def _handle_connection_request(self, port, baudrate):
+        success, message = self.model.connect_to_lora(port, baudrate)
         self.view.show_connection_result(success, message)
 
         if success:

@@ -35,6 +35,7 @@ class MainWindow(QMainWindow):
         da aplicação. Reduz acoplamento."""
 
         self.connection_requested = self.connection_page.connection_requested
+        self.available_ports_requested = self.connection_page.available_ports_requested
 
     def goto_dashboard_page(self):
         self.stack.setCurrentWidget(self.dashboard_page)
@@ -42,3 +43,6 @@ class MainWindow(QMainWindow):
     def show_connection_result(self, success, message):
         dlg = MessageWindow("Information", message, success)
         dlg.exec_()
+
+    def load_available_ports(self, ports):
+        self.connection_page.port_selector.addItems(ports)
