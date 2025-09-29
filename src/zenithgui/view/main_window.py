@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 from PyQt5.QtGui import QIcon
 
+from zenithgui.view.custom_msg_box import MessageWindow
+
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
 
@@ -18,32 +20,29 @@ class MainWindow(QMainWindow):
         self.stack = QStackedWidget()
         self.setCentralWidget(self.stack) 
 
+        # Criação de páginas
         self.connection_page = ConnectionPage()
         self.dashboard_page = DashboardPage()
 
+        # Adição das páginas à pilha
         self.stack.addWidget(self.connection_page)
         self.stack.addWidget(self.dashboard_page)
 
-# Exemplo de múltiplas telas do GPT:
-# Cria o QStackedWidget
-# self.stack = QStackedWidget()
-# self.setCentralWidget(self.stack)
+        self._promote_signals()
 
-# # Adiciona as telas
-# self.dashboard_page = DashboardPage()
-# self.settings_page = SettingsPage()
+    def _promote_signals(self):
+        """Torna sinais de páginas internas à camada view visíveis a camadas superiores
+        da aplicação. Reduz acoplamento."""
 
-# self.stack.addWidget(self.dashboard_page)
-# self.stack.addWidget(self.settings_page)
+        self.connection_requested = self.connection_page.connection_requested
+        self.available_ports_requested = self.connection_page.available_ports_requested
 
-# # Toolbar para navegação
-# toolbar = QToolBar("Navigation")
-# self.addToolBar(toolbar)
+    def goto_dashboard_page(self):
+        self.stack.setCurrentWidget(self.dashboard_page)
 
-# dashboard_action = QAction("Dashboard", self)
-# dashboard_action.triggered.connect(lambda: self.stack.setCurrentWidget(self.dashboard_page))
-# toolbar.addAction(dashboard_action)
+    def show_connection_result(self, success, message):
+        dlg = MessageWindow("Information", message, success)
+        dlg.exec_()
 
-# settings_action = QAction("Configurações", self)
-# settings_action.triggered.connect(lambda: self.stack.setCurrentWidget(self.settings_page))
-# toolbar.addAction(settings_action)
+    def load_available_ports(self, ports):
+        self.connection_page.port_selector.addItems(ports)
