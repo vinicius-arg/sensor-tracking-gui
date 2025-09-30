@@ -1,4 +1,4 @@
-# TODO(vinicius): Refatorar o gerenciamento de configurações (baudrates, etc.) 
+# TODO(vinicius)Refatorar o gerenciamento de configurações (baudrates, etc.) 
 # Usar a classe QSettings. Isso permitirá salvar a última porta e baudrate selecionados pelo usuário, 
 # melhorando a usabilidade.
 
@@ -17,3 +17,18 @@ SUPPORTED_BAUDRATES = [
     ]
 
 DEFAULT_BAUDRATE = "9600"
+
+TRACKABLE_DATA = [
+    "temperature", 
+    "accel_x",
+    "accel_y",
+    "accel_z",
+    "gyro_x",
+    "gyro_y",
+    "gyro_z",
+    "pressure",
+    "height",
+    "latitude",
+    "longitude",
+    "speed_xy"
+    ]

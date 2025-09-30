@@ -1,3 +1,0 @@
-class LoRa:
-    def __init__(self):
-        ...

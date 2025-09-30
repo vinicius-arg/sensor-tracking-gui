@@ -17,8 +17,8 @@ class MainPresenter:
         self.view.load_available_ports(available_ports)
 
     def _handle_connection_request(self, port, baudrate):
-        success, message = self.model.connect_to_lora(port, baudrate)
+        serial, success, message = self.model.connect_to_lora(port, baudrate)
         self.view.show_connection_result(success, message)
 
         if success:
-            self.view.goto_dashboard_page()
+            self.view.goto_dashboard_page(serial)
