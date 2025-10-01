@@ -9,6 +9,14 @@ from PyQt5.QtWidgets import (
 
 from PyQt5.QtCore import Qt, QTimer
 
+# class GraphData():
+#     def __init__(self):
+#         self.name
+#         self.data_remetent
+#         self.is_active
+#         self.latest_data
+#         self.plot
+
 class DashboardPage(QWidget):
     def __init__(self):
         super().__init__()
@@ -58,6 +66,14 @@ class DashboardPage(QWidget):
 
         # ---- Gráficos
         self.graph_grid = QGridLayout()
+        self.graph_grid.setSpacing(15)
+
+        # for sensor in self.sensors:
+        #     self.graph_name = QLabel(sensor.name)
+        #     self.data_remetent = QLabel(sensor.font)
+        #     ...
+
+
 
         self.main_content.addLayout(self.control_bar, stretch=1)
         self.main_content.addLayout(self.graph_grid, stretch=5)
@@ -71,86 +87,6 @@ class DashboardPage(QWidget):
     def _connect_signals(self):
         for sidebar_btn in self.sensors_buttons:
             sidebar_btn.clicked.connect(self.show_sensor_details)
-
-        
-
-        # self.graph_windows = [] # Referências para janelas de gráficos
-        # self.plots = []
-
-        # # ===== Layout principal =====
-        # main_layout = QHBoxLayout(self)
-        # main_layout.setContentsMargins(0, 0, 0, 0)
-
-        # # ===== Sidebar =====
-        # # sidebar = QFrame()
-        # # sidebar.setFixedWidth(200)
-        # # sidebar.setStyleSheet("background-color: #8000a0;")
-        # # sidebar_layout = QVBoxLayout(sidebar)
-        # # sidebar_layout.setContentsMargins(15, 30, 15, 15)
-        # # sidebar_layout.setSpacing(20)
-
-        # # title = QLabel("ZENITH GUI")
-        # # title.setFont(QFont("Arial", 14, QFont.Bold))
-        # # title.setStyleSheet("color: white;")
-        # # sidebar_layout.addWidget(title)
-
-        # # menu_items = [
-        # #     "All sensors",
-        # #     "Altímetro/Pressão",
-        # #     "Acelerômetro/Giroscópio",
-        # #     "GPS",
-        # #     "Temperatura",
-        # #     "Bateria",
-        # #     "Settings"
-        # # ]
-        # # for item in menu_items:
-        # #     btn = QPushButton(item)
-        # #     btn.setStyleSheet("""
-        # #         QPushButton {
-        # #             background: transparent;
-        # #             color: white;
-        # #             text-align: left;
-        # #             font-size: 13px;
-        # #             padding: 6px;
-        # #         }
-        # #         QPushButton:hover {
-        # #             background-color: rgba(255, 255, 255, 0.2);
-        # #         }
-        # #     """)
-        # #     btn.setCursor(Qt.PointingHandCursor)
-        # #     btn.clicked.connect(self.show_sensor_details)
-        # #     sidebar_layout.addWidget(btn)
-
-        # # sidebar_layout.addStretch()
-
-        # # ===== Área principal =====
-        # # content = QVBoxLayout()
-        # # content.setContentsMargins(20, 20, 20, 20)
-        # # content.setSpacing(20)
-
-        # # ==== Barra de controle ====
-        # # control_bar = QHBoxLayout()
-        # # control_bar.setSpacing(15)
-
-        # # start_btn = QPushButton("▶ Start tracking")
-        # # start_btn.setStyleSheet("background-color: #4CAF50; color: white; padding: 6px 12px; border-radius: 6px;")
-
-        # # stop_btn = QPushButton("■ Stop")
-        # # stop_btn.setStyleSheet("background-color: #d32f2f; color: white; padding: 6px 12px; border-radius: 6px;")
-
-        # # record_checkbox = QCheckBox("Record samples")
-        # # record_checkbox.setStyleSheet("color: white; font-size: 12px;")
-
-        # # path_input = QLineEdit("~/home/zenithgui/recordings")
-        # # path_input.setStyleSheet("background-color: #2c2c2c; color: white; padding: 6px; border-radius: 4px;")
-
-        # # control_bar.addWidget(start_btn)
-        # # control_bar.addWidget(stop_btn)
-        # # control_bar.addWidget(record_checkbox)
-        # # control_bar.addWidget(QLabel("Recording path:"))
-        # # control_bar.addWidget(path_input, stretch=1)
-
-        # # content.addLayout(control_bar)
 
         # # ==== Grid de sensores ====
         # self.plots = []  # guardo os gráficos aqui

@@ -2,6 +2,8 @@
 # Usar a classe QSettings. Isso permitirá salvar a última porta e baudrate selecionados pelo usuário, 
 # melhorando a usabilidade.
 
+DEV_MODE = True
+
 SUPPORTED_BAUDRATES = [
     "1200", 
     "2400", 

@@ -1,16 +1,16 @@
 import ctypes
 import time
-from serial import Serial, SerialException
 import serial.tools.list_ports
+
 from threading import Thread
-
 from typing import Tuple, Optional
+from serial import Serial, SerialException
 
-from model import telemetry
+from zenithgui.model import telemetry
 
 # Bytes de início de quadro (Start of Frame)
 SOF = b'\xAA\xBB'
-PACKET_SIZE = ctypes.sifzeof(telemetry.TelemetryPacket)
+PACKET_SIZE = ctypes.sizeof(telemetry.TelemetryPacket)
 
 class HandshakeException(Exception):
     """Classe pra lançar exceção caso dê problema no hanshake."""
@@ -20,9 +20,8 @@ class SerialReader(Thread):
     """
     Thread para ler continuamente a porta serial sem bloquear a UI.
     """
-    def __init__(self, telemetry_layer):
+    def __init__(self):
         super().__init__()
-        self._telemetry = telemetry_layer 
         self.is_running = False
 
     def start_tracking(self, port: str, baudrate: int, force=False) -> Tuple[Optional[Serial], bool, str]:
@@ -31,8 +30,10 @@ class SerialReader(Thread):
         self.baud_rate = baudrate
         
         res = self._serial_connect(port, baudrate, force)
-        self.is_running = True
-        self.start()
+
+        if res[0] != None:
+            self.is_running = True
+            self.start()
 
         return res
 
@@ -42,14 +43,14 @@ class SerialReader(Thread):
             self.serial = Serial(port, baudrate=int(baudrate), timeout=2)
             time.sleep(2)
             
-            if force == False: # Parâmetro que força conexão
+            if force == False: # Parâmetro que força conexão sem handshake
                 self._serial_handshake(self.serial)
             
-            return (self.serial, True, f"Conexão bem sucedida!")
+            return (self.serial, True, "Conexão bem sucedida!")
         except SerialException as e:
-            return (None, False, f"Erro ao conectar-se: {e}")
+            return (None, False, f"Erro ao conectar-se:\n{e}")
         except HandshakeException as e:
-            return (None, False, f"Erro no handshake: {e}\n*Se nada resolver, ative a conexão forçada.")
+            return (None, False, f"Erro no handshake:\n{e}\n*Se nada resolver, ative a conexão forçada.")
     
     def _serial_handshake(self, ser: Serial):
         """Verifica se o dispositivo foi realmente conectado; se pode ler e transmitir dados."""

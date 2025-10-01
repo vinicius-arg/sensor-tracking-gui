@@ -37,7 +37,8 @@ class MainWindow(QMainWindow):
         self.connection_requested = self.connection_page.connection_requested
         self.available_ports_requested = self.connection_page.available_ports_requested
 
-    def goto_dashboard_page(self):
+    def goto_dashboard_page(self, serial):
+        self.serial = serial #TODO Verificar se essa prática deve realmente ser feita
         self.stack.setCurrentWidget(self.dashboard_page)
 
     def show_connection_result(self, success, message):

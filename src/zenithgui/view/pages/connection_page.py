@@ -1,18 +1,16 @@
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox
+from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QCheckBox
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 
 from zenithgui.config import config
 
 class ConnectionPage(QWidget):
-    connection_requested = pyqtSignal(str, int)
+    connection_requested = pyqtSignal(str, int, bool)
     available_ports_requested = pyqtSignal()
 
     def __init__(self):
         super().__init__()
         self.setAutoFillBackground(True)
-
-        self.connection_requested = pyqtSignal()
 
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
@@ -37,10 +35,13 @@ class ConnectionPage(QWidget):
         self.port_selector = QComboBox()
         
         self.baudrate_label = QLabel("Connection's baud rate")
-        self.port_label.setProperty("class", "text")
+        self.baudrate_label.setProperty("class", "text")
         self.baudrate_selector = QComboBox()
         self.baudrate_selector.addItems(config.SUPPORTED_BAUDRATES)
         self.baudrate_selector.setCurrentText(config.DEFAULT_BAUDRATE)
+
+        self.force_connection = QCheckBox("Force connection")
+        self.force_connection.setProperty("class", "text")
 
     def _create_layouts(self):
         left_layout = QVBoxLayout()
@@ -56,6 +57,7 @@ class ConnectionPage(QWidget):
         right_layout.addWidget(self.port_selector)
         right_layout.addWidget(self.baudrate_label)
         right_layout.addWidget(self.baudrate_selector)
+        right_layout.addWidget(self.force_connection)
 
         main_layout = QHBoxLayout()
         main_layout.addLayout(left_layout, stretch=1)
@@ -77,7 +79,10 @@ class ConnectionPage(QWidget):
         self.lora_port = self.port_selector.currentText()
         self.lora_baudrate = int(self.baudrate_selector.currentText())
 
-        self.connection_requested.emit(self.lora_port, self.lora_baudrate)
+        self.connection_requested.emit(
+            self.lora_port, 
+            self.lora_baudrate, 
+            self.force_connection.isChecked())
 
     def _on_port_selection(self):
         self.lora_port = self.port_selector.currentText()

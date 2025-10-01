@@ -5,13 +5,12 @@ import ctypes
 from PyQt5.QtCore import QThread, pyqtSignal
 
 # Importamos as definições do nosso backend
-from model.telemetry import TelemetryPacket
-from presenter.main_presenter import CRC_CALCULATOR
+from zenithgui.model.telemetry import TelemetryPacket
 
 # O simulador precisa saber o tamanho do pacote para gerar os bytes corretamente
 PACKET_SIZE = ctypes.sizeof(TelemetryPacket)
 
-class SerialSimulator(QThread):
+class SerialSimulation(QThread):
     """
     Uma classe que simula o SerialReader. Em vez de ler uma porta serial,
     ela gera pacotes de telemetria falsos em uma thread e os emite
@@ -61,8 +60,8 @@ class SerialSimulator(QThread):
             payload = bytes(packet)[:-2]
 
             # 4. Calcular o CRC sobre o payload
-            calculated_crc = CRC_CALCULATOR.checksum(payload)
-            packet.crc = calculated_crc
+            # calculated_crc = CRC_CALCULATOR.checksum(payload)
+            # packet.crc = calculated_crc
 
             # 5. Emitir o pacote completo como bytes
             self.packet_received.emit(bytes(packet))

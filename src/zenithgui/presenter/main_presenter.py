@@ -16,8 +16,8 @@ class MainPresenter:
         available_ports = self.model.list_available_ports()
         self.view.load_available_ports(available_ports)
 
-    def _handle_connection_request(self, port, baudrate):
-        serial, success, message = self.model.connect_to_lora(port, baudrate)
+    def _handle_connection_request(self, port, baudrate, force=False):
+        serial, success, message = self.model.connect_to_lora(port, baudrate, force)
         self.view.show_connection_result(success, message)
 
         if success:

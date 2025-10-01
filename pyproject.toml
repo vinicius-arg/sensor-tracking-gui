@@ -8,7 +8,6 @@ packages = [{ include = "zenithgui", from = "src" }]
 
 [tool.poetry.dependencies]
 python = "^3.12"
-dotenv = "^0.9.9"
 pyqt5 = "^5.15.11"
 pyqtgraph = "^0.13.7"
 pyserial = "^3.5"
