@@ -39,13 +39,13 @@ class SerialSimulation(Thread):
     def generate_test_data(self):
         p = telemetry.TelemetryPacket()
         p.status.as_byte = 0xf7
-        p.temperature = 25.0 + random.randint(-5, 5)
-        p.accel_x, p.accel_y, p.accel_z = (0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1), -9.81 + random.uniform(-.1, .1))
-        p.gyro_x, p.gyro_y, p.gyro_z = (0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1))
+        p.temperature = 25.0 + random.uniform(-5, 5)
+        p.accel_x, p.accel_y, p.accel_z = (0.0 + random.uniform(-1, 1), 0.0 + random.uniform(-1, 1), -9.81 + random.uniform(-.1, .1))
+        p.gyro_x, p.gyro_y, p.gyro_z = (0.0 + random.uniform(-1, 1), 0.0 + random.uniform(-1, 1), 0.0 + random.uniform(-1, 1))
         p.pressure = 1.0 + random.uniform(-.1, .1)
-        p.height = 0.0 + random.randint(-1, 1)
+        p.height = 0.0 + random.uniform(-1, 1)
         p.latitude, p.longitude = (-10.921946 + random.uniform(-.1, .1), -37.104649 + random.uniform(-.1, .1))
-        p.speed_xy = 0.0 + random.randint(-1, 1)
+        p.speed_xy = 0.0 + random.uniform(-1, 1)
         p.battery = 5 << 16
         p.crc = 0xa04c
         return bytes(p)
@@ -57,8 +57,9 @@ class SerialSimulation(Thread):
     def _serial_connect(self, port, baudrate=9600, force=False):
         """Realiza a conexão com a porta serial passada como argumento.
         """
-        print(port, baudrate, force)
+        print(f"Conectado ao simulador: {port}, {baudrate}, {force}")
         self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
+        self.is_running = True
 
     def get_rocket_data(self):
         return self._rocket_data.get_data()

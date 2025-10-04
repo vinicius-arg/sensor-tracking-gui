@@ -1,4 +1,3 @@
-import serial.tools.list_ports
 import ctypes
 import time
 
@@ -101,21 +100,3 @@ class SerialReader(Thread):
         self._stop_event.set()
         self.join()
         self.is_running = False
-
-    @staticmethod
-    def list_available_ports() -> list[str]:
-        """Verifica o sistema e retorna uma lista de portas seriais disponíveis.
-
-        Returns:
-            list[str]: Retorna um lista do tipo { port.device[1], ..., port.device[n] }
-        """
-        ports = serial.tools.list_ports.comports()
-        available_ports = []
-        if not ports:
-            return ["<Nenhuma porta encontrada>"]
-
-        for port in ports:
-            #if sys.platform.startswith("win") or "USB" in port.description or "ACM" in port.device:
-            available_ports.append(port.device)
-            
-        return available_ports

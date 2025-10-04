@@ -14,13 +14,12 @@ class PacketType(Enum):
 
 @dataclass(frozen=True)
 class Packet:
-    def __init__(self, type, payload):
-        self.type: PacketType = type
-        self.payload: object = payload
+    type: PacketType
+    payload: object
     
     @classmethod
     def as_data(cls, payload: bytes) -> "Packet":
-        """Cria um pacote de notificação de novos dados disponíveis."""
+        """Cria um pacote de dados."""
         return cls(PacketType.DATA, payload)
 
     @classmethod
