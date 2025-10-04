@@ -8,13 +8,13 @@ from queue import Queue
 
 from zenithgui.communication.packet import Packet
 from zenithgui.communication.sender import Sender
+from zenithgui.model.telemetry import TelemetryPacket
 from zenithgui.util import _calculate_crc
-from zenithgui.model import telemetry
 from zenithgui.config import DEV_MODE
 
 # Bytes de início de quadro (Start of Frame)
 SOF = b'\xAA\xBB'
-PACKET_SIZE = ctypes.sizeof(telemetry.TelemetryPacket)
+PACKET_SIZE = ctypes.sizeof(TelemetryPacket)
 
 class HandshakeException(Exception):
     """Classe pra lançar exceção caso dê problema no hanshake.

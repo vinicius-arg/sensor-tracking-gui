@@ -1,4 +1,5 @@
 import serial.tools.list_ports
+import random
 import ctypes
 
 from threading import Thread, Event
@@ -20,7 +21,6 @@ class SerialSimulation(Thread):
         self._port_name = port
         self._baudrate = baudrate
         self._force_connection = force
-        self._rocket_data = telemetry.RocketData()
         self._stop_event = Event()
         
         self.packet_queue = queue
@@ -32,13 +32,27 @@ class SerialSimulation(Thread):
         self._serial_connect(self._port_name, self._baudrate, self._force_connection)
 
         while self.is_running:
-            data = self._generate_test_data()
-            packet = Packet.as_data()
-            self.rocket_data.update_data(data)
+            data = self.generate_test_data()
+            packet = Packet.as_data(data)
             Sender.send_packet(self.packet_queue, packet)
 
-    def _generate_test_data(self):
-        ...
+    def generate_test_data(self):
+        p = telemetry.TelemetryPacket()
+        p.status.as_byte = 0xf7
+        p.temperature = 25.0 + random.randint(-5, 5)
+        p.accel_x, p.accel_y, p.accel_z = (0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1), -9.81 + random.uniform(-.1, .1))
+        p.gyro_x, p.gyro_y, p.gyro_z = (0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1), 0.0 + random.randint(-1, 1))
+        p.pressure = 1.0 + random.uniform(-.1, .1)
+        p.height = 0.0 + random.randint(-1, 1)
+        p.latitude, p.longitude = (-10.921946 + random.uniform(-.1, .1), -37.104649 + random.uniform(-.1, .1))
+        p.speed_xy = 0.0 + random.randint(-1, 1)
+        p.battery = 5 << 16
+        p.crc = 0xa04c
+        return bytes(p)
+
+    def _bin(self, n: float):
+        import struct
+        return struct.unpack('!I', struct.pack('!f', n))[0]
 
     def _serial_connect(self, port, baudrate=9600, force=False):
         """Realiza a conexão com a porta serial passada como argumento.
@@ -73,3 +87,10 @@ class SerialSimulation(Thread):
             available_ports.append(port.device)
             
         return available_ports
+    
+def main():
+    s = SerialSimulation("COM3", 9600, Queue(), False)
+    print(s.generate_test_data())
+
+if __name__ == "__main__":
+    main()

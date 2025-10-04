@@ -14,7 +14,7 @@ pyserial = "^3.5"
 
 [tool.poetry.scripts]
 zenithgui = "zenithgui.main:main"
-
+test = "zenithgui.communication.serial_simulation:main"
 
 [build-system]
 requires = ["poetry-core"]
