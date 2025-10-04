@@ -1,5 +1,4 @@
 import ctypes
-import numpy as np
 from collections import deque
 
 from zenithgui.config import config
@@ -9,7 +8,8 @@ from zenithgui.config import config
 # dado na mesma posição. O tamanho total do pacote agora é 57 bytes.
 
 class StatusFlags(ctypes.LittleEndianStructure):
-    """ Mapeamento de bitfields para os flags de status. """
+    """Mapeamento de bits para as flags de status.
+    """
     _fields_ = [
         ("circuit_on", ctypes.c_uint8, 1),
         ("mpu_on", ctypes.c_uint8, 1),
@@ -20,15 +20,13 @@ class StatusFlags(ctypes.LittleEndianStructure):
     ]
 
 class Status(ctypes.Union):
-    """ Union permite acessar os flags como um byte ou individualmente. """
+    """Classe de união das flags de status.
+    """
     _fields_ = [("flags", StatusFlags),
                 ("as_byte", ctypes.c_uint8)]
 
 class TelemetryPacket(ctypes.LittleEndianStructure):
-    """
-    Representação exata da struct enviada pelo foguete.
-    O uso de ctypes garante uma conversão de bytes para objeto Python
-    extremamente rápida e livre de erros.
+    """Representação exata da struct enviada pelo foguete.
     """
     _pack_ = 1 
     _fields_ = [
@@ -50,10 +48,7 @@ class TelemetryPacket(ctypes.LittleEndianStructure):
     ]
 
 class RocketData():
-    """
-    Classe central que armazena o estado da aplicação.
-    Ela contém o último pacote de dados e o histórico para os gráficos.
-    Emite um sinal 'data_updated' sempre que novos dados chegam.
+    """Classe central que armazena o estado da aplicação.
     """
     def __init__(self, history_size: int = 200):
         super().__init__()
@@ -62,52 +57,54 @@ class RocketData():
 
         self._setup_data()
 
-    def _setup_data(self):
-        self._data = {
-            "status": np.zeros(self._history_size, dtype=float),
-            "temperature": np.zeros(self._history_size, dtype=float),
-            "accel_x": np.zeros(self._history_size, dtype=float),
-            "accel_y": np.zeros(self._history_size, dtype=float),
-            "accel_z": np.zeros(self._history_size, dtype=float),
-            "gyro_x": np.zeros(self._history_size, dtype=float),
-            "gyro_y": np.zeros(self._history_size, dtype=float),
-            "gyro_z": np.zeros(self._history_size, dtype=float),
-            "pressure": np.zeros(self._history_size, dtype=float),
-            "height": np.zeros(self._history_size, dtype=float),
-            "latitude": np.zeros(self._history_size, dtype=float),
-            "longitude": np.zeros(self._history_size, dtype=float),
-            "speed_xy": np.zeros(self._history_size, dtype=float),
-            "battery": np.zeros(self._history_size, dtype=float)
-        }
-
-    def _update_field(self, value, field: deque,):
-        field.append(value)
-        field.popleft()
-
     def get_data(self):
         return self._data
+    
+    def get_latest_packet(self):
+        return self._latest_packet
+
+    def _setup_data(self):
+        self._data = {
+            "status": deque(maxlen=self._history_size),
+            "temperature": deque(maxlen=self._history_size),
+            "accel_x": deque(maxlen=self._history_size),
+            "accel_y": deque(maxlen=self._history_size),
+            "accel_z": deque(maxlen=self._history_size),
+            "gyro_x": deque(maxlen=self._history_size),
+            "gyro_y": deque(maxlen=self._history_size),
+            "gyro_z": deque(maxlen=self._history_size),
+            "pressure": deque(maxlen=self._history_size),
+            "height": deque(maxlen=self._history_size),
+            "latitude": deque(maxlen=self._history_size),
+            "longitude": deque(maxlen=self._history_size),
+            "speed_xy": deque(maxlen=self._history_size),
+            "battery": deque(maxlen=self._history_size)
+        }
+
+    def _update_field(self, value, field: deque):
+        field.append(value)
 
     def update_data(self, raw_bytes: bytes):
+        """Atualiza o estado com um novo pacote de dados a partir de bytes brutos.
         """
-        Atualiza o estado com um novo pacote de dados a partir de bytes brutos.
-        """
-        self._latest_packet = TelemetryPacket.from_buffer_copy(raw_bytes)
+        try:
+            self._latest_packet = TelemetryPacket.from_buffer_copy(raw_bytes)
+        except ValueError as e:
+            print(e)
 
-        # Atualização de dados (remove mais antigo)
-        for field, field_type in TelemetryPacket._fields_:
+        # Atualização de dados
+        for field, _ in TelemetryPacket._fields_:
             if field in config.TRACKABLE_DATA:
-                value = getattr(self._latest_packet, field)
-                self._update_field(value, self._data["field"])
+                try:
+                    value = getattr(self._latest_packet, field)
+                    self._update_field(value, self._data[field])
+                except KeyError:
+                    pass
 
-        # self._update_field(self._latest_packet.temperature)
-        # self._update_field(self._latest_packet.accel_x)
-        # self._update_field(self._latest_packet.accel_y)
-        # self._update_field(self._latest_packet.accel_z)
-        # self._update_field(self._latest_packet.gyro_x)
-        # self._update_field(self._latest_packet.gyro_y)
-        # self._update_field(self._latest_packet.gyro_z)
-        # self._update_field(self._latest_packet.pressure)
-        # self._update_field(self._latest_packet.height)
-        # self._update_field(self._latest_packet.latitude)
-        # self._update_field(self._latest_packet.longitude)
-        # self._update_field(self._latest_packet.battery)
+def main():
+    r = RocketData()
+    r.update_data(b"weyrutiuboinjmkinuobiyvutyrdyexdfchjgvk124")
+    print(r.get_data())
+
+if __name__ == "__main__":
+    main()

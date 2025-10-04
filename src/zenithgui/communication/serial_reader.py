@@ -1,100 +1,113 @@
+import serial.tools.list_ports
 import ctypes
 import time
-import serial.tools.list_ports
 
-from threading import Thread
-from typing import Tuple, Optional
 from serial import Serial, SerialException
+from threading import Thread, Event
+from queue import Queue
 
+from zenithgui.communication.packet import Packet
+from zenithgui.communication.sender import Sender
+from zenithgui.util import _calculate_crc
 from zenithgui.model import telemetry
+from zenithgui.config import DEV_MODE
 
 # Bytes de início de quadro (Start of Frame)
 SOF = b'\xAA\xBB'
 PACKET_SIZE = ctypes.sizeof(telemetry.TelemetryPacket)
 
 class HandshakeException(Exception):
-    """Classe pra lançar exceção caso dê problema no hanshake."""
+    """Classe pra lançar exceção caso dê problema no hanshake.
+    """
     pass
 
 class SerialReader(Thread):
+    """Thread para ler continuamente a porta serial sem bloquear a UI.
     """
-    Thread para ler continuamente a porta serial sem bloquear a UI.
-    """
-    def __init__(self):
+    def __init__(self, port, baudrate, queue: Queue, force):
         super().__init__()
-        self.is_running = False
-
-    def start_tracking(self, port: str, baudrate: int, force=False) -> Tuple[Optional[Serial], bool, str]:
-        """ Inicia a conexão e a thread de leitura da porta serial."""
-        self.port_name = port
-        self.baud_rate = baudrate
+        self._port_name = port
+        self._baudrate = baudrate
+        self._force_connection = force
+        self._stop_event = Event()
         
-        res = self._serial_connect(port, baudrate, force)
-
-        if res[0] != None:
-            self.is_running = True
-            self.start()
-
-        return res
-
-    def _serial_connect(self, port, baudrate=9600, force=False):
-        """Realiza a conexão com a porta serial passada como argumento."""
-        try:
-            self.serial = Serial(port, baudrate=int(baudrate), timeout=2)
-            time.sleep(2)
-            
-            if force == False: # Parâmetro que força conexão sem handshake
-                self._serial_handshake(self.serial)
-            
-            return (self.serial, True, "Conexão bem sucedida!")
-        except SerialException as e:
-            return (None, False, f"Erro ao conectar-se:\n{e}")
-        except HandshakeException as e:
-            return (None, False, f"Erro no handshake:\n{e}\n*Se nada resolver, ative a conexão forçada.")
-    
-    def _serial_handshake(self, ser: Serial):
-        """Verifica se o dispositivo foi realmente conectado; se pode ler e transmitir dados."""
-        ser.flush()
-        # Comando AT (Attention). Resposta esperada: OK
-        ser.write(b'AT\r\n')
-        res = ser.readline()
-        res_str = res.decode('utf-8').strip()
-
-        if "OK" not in res_str:
-            raise HandshakeException("HandshakeException: Serial connection not estabelished.")
-
-    def disconnect(self):
-        """ Para a thread e fecha a conexão. """
+        self.packet_queue = queue
         self.is_running = False
-        self.serial.close()
 
     def run(self):
-        """Este método é executado quando self.start() é chamado. """
+        """Executado quando self.start() é chamado.
+        """
+        self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+
         while self.is_running:
             try:
                 if self.serial.read(1) == SOF[0:1]:
                     if self.serial.read(1) == SOF[1:2]:
-                        packet_data = self.serial.read(PACKET_SIZE)
-                        if len(packet_data) == PACKET_SIZE:
-                            crc = self._calculate_crc()
-                            self._send_packet(packet_data)
-            except SerialException:
-                #TODO Inserir pacotes de erro em fila compartilhada com o front.
-                self.is_running = False
+                        data = self.serial.read(PACKET_SIZE)
+                        packet = Packet.as_data(data)
+                        if len(data) == PACKET_SIZE:
+                            # Necessário calcular crc?
+                            Sender.send_packet(self.packet_queue, packet)
+                        else:
+                            msg = "Notificação: Pacote provavelmente corrompido."
+                            Sender.send_packet_with_note(self.packet_queue, msg, packet)
+            except SerialException as e:
+                # Vamos tentar não interromper a conexão
+                err_packet = Packet.as_error(f"{msg}\n{e}")
+                Sender.send_packet(self.packet_queue, err_packet)
 
-    def _calculate_crc(self):
-        #TODO Implementar calculo de CRC-16
-        ...
+    def _serial_connect(self, port, baudrate=9600, force=False):
+        """Realiza a conexão com a porta serial passada como argumento.
 
-    def _send_packet(self, payload):
-        #TODO Implementar envio de pacote sem PyQt
-        ...
+        Args:
+            port (str): Porta de conexão
+            baudrate (int, optional): Baudrate de comunicação com o dispositivo. 9600 por padrão.
+            force (bool, optional): Força conexão (ignora handshake). Falso por padrão.
+        """
+        if DEV_MODE:
+            self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
+        else:
+            try:
+                self.serial = Serial(port, baudrate=int(baudrate), timeout=2)
+                time.sleep(2)
+                if not force:
+                    # Força conexão sem handshake
+                    self._serial_handshake(self.serial)
+                self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
+            
+            except SerialException as e:
+                self.packet_queue.put(Packet.as_error(f"Erro ao conectar-se:\n{e}"))
+                self.disconnect()
+            
+            except HandshakeException as e:
+                hint = "Se nada resolver, ative a conexão forçada."
+                self.packet_queue.put(Packet.as_error(f"Erro no handshake:\n{e}\n*{hint}"))
+                self.disconnect()
+        
+    def _serial_handshake(self, ser: Serial):
+        """Verifica se o dispositivo foi realmente conectado; se pode ler e transmitir dados.
+        """
+        ser.flush()
+        ser.write(b'AT\r\n') # Comando AT (Attention). Resposta esperada: OK
+        res = ser.readline()
+        res_str = res.decode('utf-8').strip()
+        if "OK" not in res_str:
+            raise HandshakeException("HandshakeException: Serial connection not estabelished.")
+
+    def disconnect(self):
+        """Para a thread e fecha a conexão.
+        """
+        self.serial.close()
+        self._stop_event.set()
+        self.join()
+        self.is_running = False
 
     @staticmethod
-    def list_available_ports():
-        """
-        Verifica o sistema e retorna uma lista de portas seriais disponíveis.
-        Retorna uma lista: [port.device..1, ..., port.device..n]
+    def list_available_ports() -> list[str]:
+        """Verifica o sistema e retorna uma lista de portas seriais disponíveis.
+
+        Returns:
+            list[str]: Retorna um lista do tipo { port.device[1], ..., port.device[n] }
         """
         ports = serial.tools.list_ports.comports()
         available_ports = []

@@ -1,19 +1,25 @@
-import sys
-
 from zenithgui.communication import SerialReader
-from zenithgui.config import DEV_MODE
+from zenithgui.model import RocketData
 
 class MainModel():
-    def __init__(self, serial_reader: SerialReader):
-        self.serial_reader = serial_reader
+    def __init__(self):
+        self._serial_reader = None
+        self._rocket = RocketData()
 
-    def connect_to_lora(self, port, baudrate, force=False):
-        res = self.serial_reader.start_tracking(port, baudrate, force)
+    def connect_to_lora(self, port, baudrate, queue, force=False):
+        if not self._serial_reader or not self._serial_reader.is_alive():
+            # Passando canal de comunicação (queue) para o produtor
+            self._serial_reader = SerialReader(port, baudrate, queue, force)
+            self._serial_reader.start()
 
-        if DEV_MODE:
-            return (None, True, "Conexão bem sucedida!")
-        else:
-            return res
+    def stop_tracking(self):
+        self._serial_reader.disconnect()
+
+    def get_rocket_data(self):
+        return self._rocket.get_data()
     
+    def update_rocket_data(self, data):
+        self._rocket.update_data(data)
+
     def list_available_ports(self):
-        return SerialReader.list_available_ports()
+        return self._serial_reader.list_available_ports()

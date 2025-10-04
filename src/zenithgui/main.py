@@ -7,7 +7,6 @@ from zenithgui.util.path_utils import resource_path
 from zenithgui.view import MainWindow
 from zenithgui.presenter import MainPresenter
 from zenithgui.model import MainModel
-from zenithgui.communication import SerialReader
 
 style_path = resource_path("assets", "styles", "styles.qss")
 icon_path = resource_path("assets", "images", "scooby.png")
@@ -22,9 +21,8 @@ def main():
     width, height = 800, 600
     screen = QApplication.primaryScreen().geometry()
 
-    # Definição das camadas da aplicação
-    serial = SerialReader()
-    model = MainModel(serial_reader=serial)
+    # Definição das camadas da aplicaçãos
+    model = MainModel()
     main_window = MainWindow(screen, width, height, str(icon_path.resolve()))
     presenter = MainPresenter(model=model, view=main_window)
 

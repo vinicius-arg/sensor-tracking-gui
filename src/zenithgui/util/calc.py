@@ -1,0 +1,3 @@
+def _calculate_crc(self):
+    #TODO Implementar calculo de CRC-16
+    ...

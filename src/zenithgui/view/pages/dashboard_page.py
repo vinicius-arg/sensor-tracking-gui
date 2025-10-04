@@ -142,13 +142,14 @@ class DashboardPage(QWidget):
         # self.timer.timeout.connect(self.update_data)
         # self.timer.start(200)  # atualiza a cada 200 ms
 
-    def update_data(self):
+    def update_data(self, rocket_data: dict):
+        self._rocket_data = rocket_data
         """Simula dados chegando dos sensores"""
-        for curve, data in self.plots:
-            if len(data) > 50:  # mantém só 50 pontos
-                data.pop(0)
-            data.append(random.uniform(-8, 8))  # dado fake
-            curve.setData(data)
+        # for curve, data in self.plots:
+        #     if len(data) > 50:  # mantém só 50 pontos
+        #         data.pop(0)
+        #     data.append(random.uniform(-8, 8))  # dado fake
+        #     curve.setData(data)
 
     def show_sensor_details(self, sensor_index):
         """Mostra o gráfico de um sensor específico em uma nova janela."""

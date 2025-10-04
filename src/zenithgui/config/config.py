@@ -4,6 +4,8 @@
 
 DEV_MODE = True
 
+DATA_WINDOW_LEN = 50
+
 SUPPORTED_BAUDRATES = [
     "1200", 
     "2400", 
