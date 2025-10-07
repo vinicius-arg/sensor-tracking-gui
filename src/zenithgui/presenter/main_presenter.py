@@ -18,6 +18,7 @@ class MainPresenter:
         self.view.connection_requested.connect(self._handle_connection_request)
         self.view.available_ports_requested.connect(self._handle_ports_request)
         self.queue_timer.timeout.connect(self._process_queue)
+        self.view.stop_tracking.connect(self._handle_stop_tracking)
 
     def _process_queue(self):
         packet: Packet = self.packet_queue.get() 
@@ -48,3 +49,6 @@ class MainPresenter:
         if success:
             self.view.goto_dashboard_page()
             self.queue_timer.start(33) # 33ms são 30 chamadas por segundo
+
+    def _handle_stop_tracking(self):
+        self.model.stop_tracking()

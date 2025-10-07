@@ -27,6 +27,16 @@ QPushButton#LoRaConnectButton {
     padding: 10px 20px;
     border-radius: 12px;
 }
+
 QPushButton#LoRaConnectButton:hover {
     background-color: #1b5faa;
+}
+
+QFrame#SideBar {
+    background-color: purple;
+}
+
+QPushButton[class="sidebarButton"] {
+    background-color: purple;
+    color: #fff;
 }

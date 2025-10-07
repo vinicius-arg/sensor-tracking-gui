@@ -50,7 +50,7 @@ class TelemetryPacket(ctypes.LittleEndianStructure):
 class RocketData():
     """Classe central que armazena o estado da aplicação.
     """
-    def __init__(self, history_size: int = 200):
+    def __init__(self, history_size: int = 50):
         super().__init__()
         self._latest_packet = TelemetryPacket()
         self._history_size = history_size

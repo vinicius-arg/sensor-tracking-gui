@@ -1,5 +1,6 @@
 import serial.tools.list_ports
 import random
+import time
 import ctypes
 
 from threading import Thread, Event
@@ -32,9 +33,12 @@ class SerialSimulation(Thread):
         self._serial_connect(self._port_name, self._baudrate, self._force_connection)
 
         while self.is_running:
-            data = self.generate_test_data()
-            packet = Packet.as_data(data)
-            Sender.send_packet(self.packet_queue, packet)
+            if self.packet_queue.qsize() == 0:
+                data = self.generate_test_data()
+                packet = Packet.as_data(data)
+                Sender.send_packet(self.packet_queue, packet)
+            else:
+                time.sleep(0.1)
 
     def generate_test_data(self):
         p = telemetry.TelemetryPacket()
@@ -68,8 +72,8 @@ class SerialSimulation(Thread):
         """Para a thread e fecha a conexão.
         """
         self._stop_event.set()
-        self.join()
         self.is_running = False
+        self.join()
 
     @staticmethod
     def list_available_ports() -> list[str]:

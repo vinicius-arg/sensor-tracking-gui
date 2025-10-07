@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
 
         self.connection_requested = self.connection_page.connection_requested
         self.available_ports_requested = self.connection_page.available_ports_requested
+        self.stop_tracking = self.dashboard_page.stop_tracking
 
     def goto_dashboard_page(self):
         self.stack.setCurrentWidget(self.dashboard_page)
