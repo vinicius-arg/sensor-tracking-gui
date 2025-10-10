@@ -33,10 +33,12 @@ class ConnectionPage(QWidget):
         self.port_label = QLabel("Connection's port")
         self.port_label.setProperty("class", "text")
         self.port_selector = QComboBox()
+        self.port_selector.setProperty("class", "input")
         
         self.baudrate_label = QLabel("Connection's baud rate")
         self.baudrate_label.setProperty("class", "text")
         self.baudrate_selector = QComboBox()
+        self.baudrate_selector.setProperty("class", "input")
         self.baudrate_selector.addItems(config.SUPPORTED_BAUDRATES)
         self.baudrate_selector.setCurrentText(config.DEFAULT_BAUDRATE)
 

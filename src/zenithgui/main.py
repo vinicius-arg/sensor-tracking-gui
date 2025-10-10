@@ -1,15 +1,16 @@
 import sys
 
-from zenithgui import config
 from PyQt5.QtWidgets import QApplication
-from zenithgui.util.path_utils import resource_path
 
+from zenithgui.util.path_utils import resource_path
+from zenithgui.util.load_fonts import load_fonts
 from zenithgui.view import MainWindow
 from zenithgui.presenter import MainPresenter
 from zenithgui.model import MainModel
 
 style_path = resource_path("assets", "styles", "styles.qss")
 icon_path = resource_path("assets", "images", "scooby.png")
+
 
 # Importação dos estilos .qss
 with style_path.open("r", encoding="utf-8") as f:
@@ -27,6 +28,7 @@ def main():
     presenter = MainPresenter(model=model, view=main_window)
 
     main_window.setStyleSheet(style)
+    load_fonts("assets", "fonts")
 
     main_window.show()
     sys.exit(app.exec())

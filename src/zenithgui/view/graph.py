@@ -11,4 +11,4 @@ class Graph:
     frame: QFrame
     plot_widget: pg.PlotWidget
     curve: pg.PlotDataItem
-    current_value_label: QLabel
+    current: QLabel

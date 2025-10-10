@@ -24,14 +24,14 @@ DEFAULT_BAUDRATE = "9600"
 
 TRACKABLE_DATA = [
     "temperature", 
+    "pressure",
+    "height",
     "accel_x",
     "accel_y",
     "accel_z",
     "gyro_x",
     "gyro_y",
     "gyro_z",
-    "pressure",
-    "height",
     "latitude",
     "longitude",
     "speed_xy"
