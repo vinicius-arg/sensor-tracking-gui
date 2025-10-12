@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
 from PyQt5.QtGui import QIcon
 
-from zenithgui.view.custom_msg_box import MessageWindow
+from zenithgui.view.components.custom_msg import MessageWindow
 
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
@@ -29,6 +29,11 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.dashboard_page)
 
         self._promote_signals()
+        self._promote_buttons()
+
+    def _promote_buttons(self):
+        self.start_btn = self.dashboard_page.start_btn
+        self.stop_btn = self.dashboard_page.stop_btn
 
     def _promote_signals(self):
         """Torna sinais de páginas internas à camada view visíveis a camadas superiores

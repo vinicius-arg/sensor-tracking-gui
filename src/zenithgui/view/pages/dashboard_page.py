@@ -3,7 +3,7 @@ from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QLineEdit, QCheckBox, QFrame, QGridLayout, QTabBar
 from PyQt5.QtCore import pyqtSignal
 
-from zenithgui.view.graph import Graph
+from zenithgui.view.components.graph import Graph
 from zenithgui import config
 
 class DashboardPage(QWidget):

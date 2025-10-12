@@ -25,12 +25,17 @@ class MainModel():
                 self._serial_reader = SerialSimulation(port, baudrate, queue, force)
             else:
                 self._serial_reader = SerialReader(port, baudrate, queue, force)
-            self._serial_reader.start()
 
     def stop_tracking(self):
         """Finaliza o monitoramento dos sensores.
         """
         self._serial_reader.disconnect()
+
+    def start_tracking(self):
+        self._serial_reader.start()
+
+    def reader_is_running(self) -> bool:
+        return self._serial_reader.is_running
 
     def get_rocket_data(self) -> dict:
         """Obtém o histórico de dados coletados.

@@ -31,6 +31,7 @@ class SerialReader(Thread):
         self._stop_event = Event()
         
         self.packet_queue = queue
+        self.is_connected = False
         self.is_running = False
 
     def run(self):
@@ -38,7 +39,7 @@ class SerialReader(Thread):
         """
         self._connect(self._port_name, self._baudrate, self._force_connection)
 
-        while self.is_running:
+        while self.is_running and not self._stop_event.is_set():
             try:
                 if self._check_sof():
                     if self.packet_queue.qsize() == 0:
@@ -54,6 +55,12 @@ class SerialReader(Thread):
             except SerialException as e: # Vamos tentar não interromper a conexão
                 err_packet = Packet.as_error(f"{msg}\n{e}")
                 Sender.send_packet(self.packet_queue, err_packet)
+
+    def pause(self):
+        self._stop_event.set()
+
+    def resume(self):
+        self._stop_event.clear()
 
     def _check_sof(self) -> bool:
         return self.serial.read(len(SOF)) == SOF
@@ -81,6 +88,8 @@ class SerialReader(Thread):
             hint = "Se nada resolver, ative a conexão forçada."
             self.packet_queue.put(Packet.as_error(f"Erro no handshake:\n{e}\n*{hint}"))
             self.disconnect()
+
+        self.is_connected = True
         
     def _handshake(self, serial: Serial):
         """Verifica se o dispositivo foi realmente conectado; se pode ler e transmitir dados.

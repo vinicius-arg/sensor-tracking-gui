@@ -4,8 +4,9 @@ from queue import Queue
 from zenithgui.model.main_model import MainModel
 from zenithgui.view.main_window import MainWindow
 from zenithgui.communication import Packet, PacketType
+from zenithgui.config.config import TIME_PQUEUE
 
-class MainPresenter:
+class MainPresenter:    
     def __init__(self, model: MainModel, view: MainWindow):
         self.packet_queue = Queue()
         self.queue_timer = QTimer()
@@ -31,9 +32,21 @@ class MainPresenter:
         elif packet.type == PacketType.ERROR:
             self.view.show_info_as_popup(False, packet.payload)
 
-    def stop_app(self):
+    def start_tracking(self):
+        self.queue_timer.start(TIME_PQUEUE) 
+        self.model.start_tracking()
+        self.set_buttons_state()
+
+    def stop_tracking(self):
         self.model.stop_tracking()
         self.queue_timer.stop()
+        self.set_buttons_state()
+
+    def set_buttons_state(self):
+        state = self.model.reader_is_running()
+
+        self.view.start_btn.setEnabled(not state)
+        self.view.stop_btn.setEnabled(state)
 
     def _handle_ports_request(self):
         available_ports = self.model.list_available_ports()
@@ -41,6 +54,7 @@ class MainPresenter:
 
     def _handle_connection_request(self, port, baudrate, force=False):
         self.model.connect_to_lora(port, baudrate, self.packet_queue, force)
+        self.start_tracking()
 
         result = self.packet_queue.get()
         success = result.type == PacketType.STATUS
@@ -48,7 +62,6 @@ class MainPresenter:
 
         if success:
             self.view.goto_dashboard_page()
-            self.queue_timer.start(33) # 33ms são 30 chamadas por segundo
 
     def _handle_stop_tracking(self):
-        self.model.stop_tracking()
+        self.stop_tracking()
