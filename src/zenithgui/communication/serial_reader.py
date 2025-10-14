@@ -34,10 +34,12 @@ class SerialReader(Thread):
         self.is_connected = False
         self.is_running = False
 
+        self._connect(self._port_name, self._baudrate, self._force_connection)
+
     def run(self):
         """Executado quando self.start() é chamado.
         """
-        self._connect(self._port_name, self._baudrate, self._force_connection)
+        #self._connect(self._port_name, self._baudrate, self._force_connection)
 
         while self.is_running and not self._stop_event.is_set():
             try:

@@ -33,8 +33,8 @@ class MainPresenter:
             self.view.show_info_as_popup(False, packet.payload)
 
     def start_tracking(self):
-        self.queue_timer.start(TIME_PQUEUE) 
         self.model.start_tracking()
+        self.queue_timer.start(TIME_PQUEUE) 
         self.set_buttons_state()
 
     def stop_tracking(self):
@@ -64,4 +64,5 @@ class MainPresenter:
             self.view.goto_dashboard_page()
 
     def _handle_stop_tracking(self):
+        print("emitiu")
         self.stop_tracking()

@@ -32,8 +32,8 @@ class MainWindow(QMainWindow):
         self._promote_buttons()
 
     def _promote_buttons(self):
-        self.start_btn = self.dashboard_page.start_btn
-        self.stop_btn = self.dashboard_page.stop_btn
+        self.start_btn = self.dashboard_page.dashboard.start_btn
+        self.stop_btn = self.dashboard_page.dashboard.stop_btn
 
     def _promote_signals(self):
         """Torna sinais de páginas internas à camada view visíveis a camadas superiores
