@@ -59,8 +59,26 @@ QPushButton[class="menuBtn"] {
     border-radius: 6px;
 }
 
-QPushButton[class="menuBtn--disable"] {
-    background-color: #000;
+#StartBtn {
+    background-color: #813581;
+}
+
+#StopBtn {
+    background-color: #742929;
+}
+
+#StartBtn:hover {
+    background-color: #6d256d;
+}
+
+#StopBtn:hover {
+    background-color: #5a1f1f;
+}
+
+#StartBtn:disabled,
+#StopBtn:disabled {
+    background-color: #686868;
+    color: #303030;
 }
 
 QPushButton[class="sidebarButton"] {
@@ -69,8 +87,16 @@ QPushButton[class="sidebarButton"] {
     color: #d6d6d6;
 }
 
-*[class="input"] {
+QLineEdit {
     background-color: #d6d6d6;
+    color: #0c0b0b;
+}
+
+QCheckBox[class="input"] {
+    color: #d6d6d6;
+}
+
+*[class="input"] {
     color: #0c0b0b;
     font-size: 1rem;
     font-weight: bold;
@@ -78,8 +104,54 @@ QPushButton[class="sidebarButton"] {
     border-radius: 6px;
 }
 
+*[class="input"]:disabled {
+    color: #686868;
+}
+
 #GraphFrame QLabel[class="currentValue"] {
     border: 1px solid #6d256d ;
     font-size: 12pt;
     color: #af5faf;
+}
+
+QFileDialog,
+QFileDialog * {
+    background-color: #303030;
+    color: #d6d6d6;
+}
+
+QFileDialog QListView, 
+QFileDialog QTreeView {
+    color: #d6d6d6;
+    background-color: #303030;
+    border: 1px solid #444;
+}
+
+QFileDialog QListView::item:selected, 
+QFileDialog QTreeView::item:selected {
+    background-color: #813581;
+    color: #d6d6d6;
+}
+
+QFileDialog QLineEdit {
+    background-color: #d6d6d6;
+    color: #0c0b0b;
+    border: 1px solid #555;
+    padding: 4px;
+}
+
+QFileDialog QPushButton {
+    background-color: #444;
+    color: #d6d6d6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+QFileDialog QPushButton:hover {
+    background-color: #303030;
+}
+
+QLabel#Info {
+    font-size: 10pt;
 }

@@ -11,10 +11,12 @@ python = "^3.12"
 pyqt5 = "^5.15.11"
 pyqtgraph = "^0.13.7"
 pyserial = "^3.5"
+pandas = "^2.3.3"
 
 [tool.poetry.scripts]
 zenithgui = "zenithgui.main:main"
-test = "zenithgui.communication.serial_simulation:main"
+serial_test = "zenithgui.communication.serial_simulation:main"
+csv_test = "zenithgui.util.write_csv:main"
 
 [build-system]
 requires = ["poetry-core"]

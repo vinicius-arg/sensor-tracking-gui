@@ -1,13 +1,13 @@
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QCheckBox, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QCheckBox, QLabel
 from PyQt5.QtCore import pyqtSignal
 
 from zenithgui.view.components.graph import Graph
+from zenithgui.view.components.file_handler import FileHandler
 from zenithgui.config import config
 
 class Dashboard(QWidget):
     START_STR = "Start tracking"
     STOP_STR = "Stop"
-    SAVE_STR = "~/path/to/recordings"
     RECORD_STR = "Record samples"
     GRAPH_GRID_COLUMNS = 3
 
@@ -18,6 +18,7 @@ class Dashboard(QWidget):
 
         self.page = page
         self.graphs: dict[str, Graph] = {}
+        self.full_history: dict[str, list] = {} 
         self.sensors_to_plot = config.TRACKABLE_DATA
         self.sensors_alias = config.DATA_ALIAS
 
@@ -26,25 +27,31 @@ class Dashboard(QWidget):
         self._connect_signals()
         self._apply_styles()
 
+        self.setLayout(self.content)
+
     def _create_widgets(self):
         self.start_btn = QPushButton(self.START_STR)
         self.stop_btn = QPushButton(self.STOP_STR)
-        self.record_checkbox = QCheckBox(self.RECORD_STR)
-        self.save_path = QLineEdit(self.SAVE_STR)
+        self.checkbox = QCheckBox(self.RECORD_STR)
+        self.file_handler = FileHandler(self.checkbox)
+
+        self.info = QLabel("*Information label")
 
     def _create_layouts(self):
-        self.main_content = QVBoxLayout()
+        self.content = QVBoxLayout()
         self.control_bar = QHBoxLayout()
         self.graph_grid = QGridLayout()
 
         self.control_bar.addWidget(self.start_btn)
         self.control_bar.addWidget(self.stop_btn)
-        self.control_bar.addWidget(self.record_checkbox)
-        self.control_bar.addWidget(self.save_path)
+        self.control_bar.addWidget(self.checkbox)
+        self.control_bar.addWidget(self.file_handler)
         self._create_graphs()
 
-        self.main_content.addLayout(self.control_bar, stretch=1)
-        self.main_content.addLayout(self.graph_grid, stretch=5)
+        self.content.addLayout(self.control_bar, stretch=1)
+        self.content.addLayout(self.graph_grid, stretch=5)
+
+        self.content.addWidget(self.info)
 
     def _connect_signals(self):
         self.stop_btn.pressed.connect(self.stop_tracking.emit)
@@ -61,7 +68,13 @@ class Dashboard(QWidget):
     def _apply_styles(self):
         self.start_btn.setProperty("class", "menuBtn")
         self.stop_btn.setProperty("class", "menuBtn")
-        self.save_path.setProperty("class", "input")
+        self.file_handler.setProperty("class", "input")
+        self.checkbox.setProperty("class", "input")
+        
+        self.start_btn.setObjectName("StartBtn")
+        self.stop_btn.setObjectName("StopBtn")
+        self.info.setObjectName("Info")
+
         self.graph_grid.setSpacing(15)
 
     def _get_sensor_name(self, raw_name):

@@ -27,10 +27,12 @@ class SerialSimulation(Thread):
         self.packet_queue = queue
         self.is_running = False
 
+        self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+
     def run(self):
         """Executado quando self.start() é chamado.
         """
-        self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+        #self._serial_connect(self._port_name, self._baudrate, self._force_connection)
 
         while self.is_running:
             if self.packet_queue.qsize() == 0:

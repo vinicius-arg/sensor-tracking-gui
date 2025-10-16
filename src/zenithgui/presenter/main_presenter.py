@@ -45,8 +45,10 @@ class MainPresenter:
     def set_buttons_state(self):
         state = self.model.reader_is_running()
 
-        self.view.start_btn.setEnabled(not state)
         self.view.stop_btn.setEnabled(state)
+        self.view.start_btn.setEnabled(not state)
+        self.view.checkbox.setEnabled(not state)
+        self.view.save_path.setEnabled(not state)
 
     def _handle_ports_request(self):
         available_ports = self.model.list_available_ports()

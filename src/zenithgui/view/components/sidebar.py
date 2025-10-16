@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QFrame, QPushButton, QVBoxLayout
 from zenithgui.config import config
 
-class SideBar(QWidget):
+class SideBar(QFrame):
     def __init__(self, page, sensors: list):
         super().__init__()
 
@@ -13,9 +13,9 @@ class SideBar(QWidget):
         self._connect_signals()
         self._apply_styles()
 
-    def _create_widgets(self):
-        self.container = QFrame()
+        self.setLayout(self.content)
 
+    def _create_widgets(self):
         self.app_name = QLabel(config.APP_NAME)
         self.subtitle = QLabel(config.APP_SUBTITLE)
         
@@ -30,15 +30,15 @@ class SideBar(QWidget):
             self.sensors_buttons.append(button)
 
     def _create_layouts(self):
-        self.container_layout = QVBoxLayout(self.container)
+        self.content = QVBoxLayout(self)
 
-        self.container_layout.addWidget(self.app_name)
-        self.container_layout.addWidget(self.subtitle)
-        self.container_layout.addWidget(self.horizontal_bar)
-        self.container_layout.addStretch()
+        self.content.addWidget(self.app_name)
+        self.content.addWidget(self.subtitle)
+        self.content.addWidget(self.horizontal_bar)
+        self.content.addStretch()
 
         for sidebar_btn in self.sensors_buttons:
-            self.container_layout.addWidget(sidebar_btn)
+            self.content.addWidget(sidebar_btn)
 
     def _connect_signals(self):
         for button in self.sensors_buttons:
@@ -46,8 +46,9 @@ class SideBar(QWidget):
 
     def _apply_styles(self):
         self.subtitle.setWordWrap(True)
-        self.container_layout.setContentsMargins(15, 15, 15, 15)
+        self.content.setContentsMargins(15, 15, 15, 15)
+        self.setMinimumWidth(200)
 
         self.app_name.setObjectName("AppTitle")
         self.subtitle.setObjectName("AppSubTitle")
-        self.container.setObjectName("SideBar")
+        self.setObjectName("SideBar")
