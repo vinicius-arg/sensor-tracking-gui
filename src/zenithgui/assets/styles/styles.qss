@@ -75,8 +75,7 @@ QPushButton[class="menuBtn"] {
     background-color: #5a1f1f;
 }
 
-#StartBtn:disabled,
-#StopBtn:disabled {
+QPushButton[class="menuBtn"]:disabled {
     background-color: #686868;
     color: #303030;
 }

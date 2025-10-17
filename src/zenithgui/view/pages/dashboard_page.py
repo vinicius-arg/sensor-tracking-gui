@@ -1,5 +1,5 @@
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 
 from zenithgui.view.components.sidebar import SideBar
 from zenithgui.view.components.dashboard import Dashboard
@@ -15,6 +15,7 @@ class DashboardPage(QWidget):
         self._create_widgets()
         self._create_layouts()
         self._promote_signals()
+        self._promote_buttons()
         self._apply_styles()
     
     def _load_sensors(self):
@@ -23,11 +24,13 @@ class DashboardPage(QWidget):
     def _create_widgets(self):
         self.sidebar = SideBar(self, self.sensors)
         self.dashboard = Dashboard(self)
+
+        self.info = self.dashboard.info
         
     def _create_layouts(self):
         self.main_layout = QHBoxLayout()
-        self.main_layout.addWidget(self.sidebar.container, stretch=1)
-        self.main_layout.addLayout(self.dashboard.main_content, stretch=4)
+        self.main_layout.addWidget(self.sidebar, stretch=1)
+        self.main_layout.addWidget(self.dashboard, stretch=4)
 
         self.setLayout(self.main_layout)  
 
@@ -35,15 +38,23 @@ class DashboardPage(QWidget):
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
         self.setPalette(palette)
-
+        
     def _promote_signals(self):
         self.stop_tracking = self.dashboard.stop_tracking
+        self.pause_tracking = self.dashboard.pause_tracking
+        self.start_tracking = self.dashboard.start_tracking
+
+    def _promote_buttons(self):
+        self.start_btn = self.dashboard.start_btn
+        self.pause_btn = self.dashboard.pause_btn
+        self.stop_btn = self.dashboard.stop_btn
+        self.checkbox = self.dashboard.checkbox
+        self.file_handler = self.dashboard.file_handler
 
     def update_data(self, rocket_data: dict):
         for name, data in rocket_data.items():
             if name in self.dashboard.graphs:
-                # Atualização de gráficos
-                g = self.dashboard.graphs[name]                
+                g = self.dashboard.graphs[name]         
                 g.curve.setData(data)
                 # Atualização de último valor
                 last_value = data[-1]

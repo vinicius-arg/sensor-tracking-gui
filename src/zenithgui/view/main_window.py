@@ -33,6 +33,7 @@ class MainWindow(QMainWindow):
 
     def _promote_buttons(self):
         self.start_btn = self.dashboard_page.start_btn
+        self.pause_btn = self.dashboard_page.pause_btn
         self.stop_btn = self.dashboard_page.stop_btn
         self.checkbox = self.dashboard_page.checkbox
         self.save_path = self.dashboard_page.file_handler
@@ -43,6 +44,8 @@ class MainWindow(QMainWindow):
 
         self.connection_requested = self.connection_page.connection_requested
         self.available_ports_requested = self.connection_page.available_ports_requested
+        self.start_tracking = self.dashboard_page.start_tracking
+        self.pause_tracking = self.dashboard_page.pause_tracking
         self.stop_tracking = self.dashboard_page.stop_tracking
 
     def goto_dashboard_page(self):

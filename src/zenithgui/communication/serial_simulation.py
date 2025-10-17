@@ -22,10 +22,12 @@ class SerialSimulation(Thread):
         self._port_name = port
         self._baudrate = baudrate
         self._force_connection = force
-        self._stop_event = Event()
+        self._pause_event = Event()
         
         self.packet_queue = queue
+        self.is_connected = False
         self.is_running = False
+        self.is_paused = True
 
         self._serial_connect(self._port_name, self._baudrate, self._force_connection)
 
@@ -33,12 +35,15 @@ class SerialSimulation(Thread):
         """Executado quando self.start() é chamado.
         """
         #self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+        self.is_running = True
+        self.is_paused = False
 
         while self.is_running:
             if self.packet_queue.qsize() == 0:
                 data = self.generate_test_data()
-                packet = Packet.as_data(data)
-                Sender.send_packet(self.packet_queue, packet)
+                if not self._pause_event.is_set():
+                    packet = Packet.as_data(data)
+                    Sender.send_packet(self.packet_queue, packet)
             else:
                 time.sleep(0.1)
 
@@ -63,17 +68,26 @@ class SerialSimulation(Thread):
     def _serial_connect(self, port, baudrate=9600, force=False):
         """Realiza a conexão com a porta serial passada como argumento.
         """
-        print(f"Conectado ao simulador: {port}, {baudrate}, {force}")
+        print(f"Conectado ao simulador: port={port}, bdr={baudrate}, f={force}")
         self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
-        self.is_running = True
+        self.is_connected = True
 
     def get_rocket_data(self):
         return self._rocket_data.get_data()
+    
+    def pause(self):
+        self._pause_event.set()
+        self.is_paused = True
+
+    def resume(self):
+        self._pause_event.clear()
+        self.is_paused = False
 
     def disconnect(self):
         """Para a thread e fecha a conexão.
         """
-        self._stop_event.set()
+        self._pause_event.set()
+        self.is_connected = False
         self.is_running = False
         self.join()
 

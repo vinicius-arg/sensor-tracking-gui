@@ -19,7 +19,9 @@ class MainPresenter:
         self.view.connection_requested.connect(self._handle_connection_request)
         self.view.available_ports_requested.connect(self._handle_ports_request)
         self.queue_timer.timeout.connect(self._process_queue)
-        self.view.stop_tracking.connect(self._handle_stop_tracking)
+        self.view.start_tracking.connect(self.start_tracking)
+        self.view.pause_tracking.connect(self.pause_tracking)
+        self.view.stop_tracking.connect(self.stop_tracking)
 
     def _process_queue(self):
         packet: Packet = self.packet_queue.get() 
@@ -38,14 +40,21 @@ class MainPresenter:
         self.set_buttons_state()
 
     def stop_tracking(self):
-        self.model.stop_tracking()
         self.queue_timer.stop()
+        self.model.stop_tracking()
+        self.set_buttons_state()
+        self.view.start_btn.setEnabled(False)
+    
+    def pause_tracking(self):
+        self.queue_timer.stop()
+        self.model.pause_tracking()
         self.set_buttons_state()
 
     def set_buttons_state(self):
         state = self.model.reader_is_running()
 
         self.view.stop_btn.setEnabled(state)
+        self.view.pause_btn.setEnabled(state)
         self.view.start_btn.setEnabled(not state)
         self.view.checkbox.setEnabled(not state)
         self.view.save_path.setEnabled(not state)
@@ -56,7 +65,6 @@ class MainPresenter:
 
     def _handle_connection_request(self, port, baudrate, force=False):
         self.model.connect_to_lora(port, baudrate, self.packet_queue, force)
-        self.start_tracking()
 
         result = self.packet_queue.get()
         success = result.type == PacketType.STATUS
@@ -64,7 +72,4 @@ class MainPresenter:
 
         if success:
             self.view.goto_dashboard_page()
-
-    def _handle_stop_tracking(self):
-        print("emitiu")
-        self.stop_tracking()
+            self.set_buttons_state()

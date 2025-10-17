@@ -21,48 +21,63 @@ class HandshakeException(Exception):
     pass
 
 class SerialReader(Thread):
-    """Thread para ler continuamente a porta serial sem bloquear a UI.
+    """Thread para ler continuamente a porta serial.
     """
+    CORRUPT_PACKET_MSG = "Notificação: Pacote provavelmente corrompido."
+
     def __init__(self, port, baudrate, queue: Queue, force):
         super().__init__()
         self._port_name = port
         self._baudrate = baudrate
         self._force_connection = force
-        self._stop_event = Event()
+        self._pause_event = Event()
         
         self.packet_queue = queue
         self.is_connected = False
         self.is_running = False
+        self.is_paused = True
 
         self._connect(self._port_name, self._baudrate, self._force_connection)
 
     def run(self):
         """Executado quando self.start() é chamado.
+           Quando pause_event está setado, os pacotes lidos são descartados.
         """
-        #self._connect(self._port_name, self._baudrate, self._force_connection)
+        self.is_running = True
 
-        while self.is_running and not self._stop_event.is_set():
+        while self.is_running:
             try:
-                if self._check_sof():
-                    if self.packet_queue.qsize() == 0:
-                        data = self.serial.read(PACKET_SIZE)
+                if self._check_sof() and self._can_recv_packet():
+                    data = self.serial.read(PACKET_SIZE)
+                    if not self._pause_event.is_set():
                         packet = Packet.as_data(data)
-                        if len(data) == PACKET_SIZE:
+
+                        if self._packet_is_valid(data):
                             Sender.send_packet(self.packet_queue, packet)
                         else:
-                            msg = "Notificação: Pacote provavelmente corrompido."
-                            Sender.send_packet_with_note(self.packet_queue, msg, packet)
-                    else:
-                        time.sleep(0.1)
+                            Sender.send_packet_with_note(
+                                queue=self.packet_queue, 
+                                msg=self.CORRUPT_PACKET_MSG, 
+                                packet=packet)
+                else:
+                    time.sleep(0.1)
             except SerialException as e: # Vamos tentar não interromper a conexão
-                err_packet = Packet.as_error(f"{msg}\n{e}")
+                err_packet = Packet.as_error(f"{self.CORRUPT_PACKET_MSG}\n{e}")
                 Sender.send_packet(self.packet_queue, err_packet)
 
     def pause(self):
-        self._stop_event.set()
+        self._pause_event.set()
+        self.is_paused = True
 
     def resume(self):
-        self._stop_event.clear()
+        self._pause_event.clear()
+        self.is_paused = False
+
+    def _can_recv_packet(self):
+        return self.packet_queue.qsize() == 0
+    
+    def _packet_is_valid(self, data):
+        return len(data) == PACKET_SIZE
 
     def _check_sof(self) -> bool:
         return self.serial.read(len(SOF)) == SOF
@@ -107,6 +122,7 @@ class SerialReader(Thread):
         """Para a thread e fecha a conexão.
         """
         self.serial.close()
-        self._stop_event.set()
+        self._pause_event.set()
         self.join()
         self.is_running = False
+        self.is_connected = False

@@ -7,10 +7,13 @@ from zenithgui.config import config
 
 class Dashboard(QWidget):
     START_STR = "Start tracking"
+    PAUSE_STR = "Pause"
     STOP_STR = "Stop"
     RECORD_STR = "Record samples"
     GRAPH_GRID_COLUMNS = 3
 
+    start_tracking = pyqtSignal()
+    pause_tracking = pyqtSignal()
     stop_tracking = pyqtSignal()
 
     def __init__(self, page):
@@ -18,7 +21,7 @@ class Dashboard(QWidget):
 
         self.page = page
         self.graphs: dict[str, Graph] = {}
-        self.full_history: dict[str, list] = {} 
+        self.full_history: dict[str, list] = {} #TODO Rastrear dados se checkbox is on, salvar qd stop
         self.sensors_to_plot = config.TRACKABLE_DATA
         self.sensors_alias = config.DATA_ALIAS
 
@@ -31,11 +34,12 @@ class Dashboard(QWidget):
 
     def _create_widgets(self):
         self.start_btn = QPushButton(self.START_STR)
+        self.pause_btn = QPushButton(self.PAUSE_STR)
         self.stop_btn = QPushButton(self.STOP_STR)
         self.checkbox = QCheckBox(self.RECORD_STR)
         self.file_handler = FileHandler(self.checkbox)
 
-        self.info = QLabel("*Information label")
+        self.info = QLabel("*Information label") #TODO Notificações 
 
     def _create_layouts(self):
         self.content = QVBoxLayout()
@@ -43,6 +47,7 @@ class Dashboard(QWidget):
         self.graph_grid = QGridLayout()
 
         self.control_bar.addWidget(self.start_btn)
+        self.control_bar.addWidget(self.pause_btn)
         self.control_bar.addWidget(self.stop_btn)
         self.control_bar.addWidget(self.checkbox)
         self.control_bar.addWidget(self.file_handler)
@@ -54,6 +59,8 @@ class Dashboard(QWidget):
         self.content.addWidget(self.info)
 
     def _connect_signals(self):
+        self.start_btn.pressed.connect(self.start_tracking.emit)
+        self.pause_btn.pressed.connect(self.pause_tracking.emit)
         self.stop_btn.pressed.connect(self.stop_tracking.emit)
 
     def _create_graphs(self):
@@ -67,6 +74,7 @@ class Dashboard(QWidget):
 
     def _apply_styles(self):
         self.start_btn.setProperty("class", "menuBtn")
+        self.pause_btn.setProperty("class", "menuBtn")
         self.stop_btn.setProperty("class", "menuBtn")
         self.file_handler.setProperty("class", "input")
         self.checkbox.setProperty("class", "input")
