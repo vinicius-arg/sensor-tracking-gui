@@ -44,10 +44,11 @@ class MainPresenter:
         self.model.stop_tracking()
         self.set_buttons_state()
 
-        path = self.view.file_handler.path
-        data = self.view.history
-        self.view.file_handler.save_data(data, path)
-        self.view.start_btn.setEnabled(False)
+        if self.view.checkbox.isChecked():
+            path = self.view.file_handler.path
+            data = self.view.history
+            self.view.file_handler.save_data(data, path)
+            self.view.start_btn.setEnabled(False)
     
     def pause_tracking(self):
         self.queue_timer.stop()
