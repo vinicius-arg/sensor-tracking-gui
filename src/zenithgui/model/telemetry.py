@@ -53,7 +53,7 @@ class RocketData():
     def __init__(self, history_size: int = 50):
         super().__init__()
         self._latest_packet = TelemetryPacket()
-        self._history_size = history_size
+        self._history_size = config.DATA_WINDOW_LENGTH
 
         self._setup_data()
 

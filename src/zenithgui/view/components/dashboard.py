@@ -39,7 +39,7 @@ class Dashboard(QWidget):
         self.checkbox = QCheckBox(self.RECORD_STR)
         self.file_handler = FileHandler(self.checkbox)
 
-        self.info = QLabel("*Information label") #TODO Notificações 
+        self.info = QLabel() #TODO Notificações 
 
     def _create_layouts(self):
         self.content = QVBoxLayout()

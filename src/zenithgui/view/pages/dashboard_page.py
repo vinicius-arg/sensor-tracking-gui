@@ -17,6 +17,9 @@ class DashboardPage(QWidget):
         self._promote_signals()
         self._promote_buttons()
         self._apply_styles()
+
+        self.full_history = self.dashboard.full_history
+        self.window_data_processed = int(0)
     
     def _load_sensors(self):
         self.sensors = config.DATA_MAP
@@ -59,6 +62,25 @@ class DashboardPage(QWidget):
                 # Atualização de último valor
                 last_value = data[-1]
                 g.current.setText(f"{last_value:.2f}")
+
+                if self.checkbox.isChecked():
+                    self._save_data(rocket_data)
+
+    def _save_data(self, rocket_data):
+        self.window_data_processed += 1
+
+        if self._data_window_snapshotted():
+            self._save_data_to_history(rocket_data)
+            self.window_data_processed = 0
+
+    def _data_window_snapshotted(self):
+        return self.window_data_processed == config.DATA_WINDOW_LENGTH
+    
+    def _save_data_to_history(self, rocket_data: dict):
+        for name, data in rocket_data.items():
+            if name in self.dashboard.graphs:
+                self.full_history.setdefault(name, [])
+                self.full_history[name].extend(data)
 
     def show_sensor_details(self):
         ...

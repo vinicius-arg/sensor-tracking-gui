@@ -24,7 +24,7 @@ class MainPresenter:
         self.view.stop_tracking.connect(self.stop_tracking)
 
     def _process_queue(self):
-        packet: Packet = self.packet_queue.get() 
+        packet: Packet = self.packet_queue.get()
         if packet.type == PacketType.DATA:
             self.model.update_rocket_data(packet.payload)
             rocket_data = self.model.get_rocket_data()
@@ -43,6 +43,10 @@ class MainPresenter:
         self.queue_timer.stop()
         self.model.stop_tracking()
         self.set_buttons_state()
+
+        path = self.view.file_handler.path
+        data = self.view.history
+        self.view.file_handler.save_data(data, path)
         self.view.start_btn.setEnabled(False)
     
     def pause_tracking(self):
@@ -57,7 +61,7 @@ class MainPresenter:
         self.view.pause_btn.setEnabled(state)
         self.view.start_btn.setEnabled(not state)
         self.view.checkbox.setEnabled(not state)
-        self.view.save_path.setEnabled(not state)
+        self.view.file_handler.setEnabled(not state)
 
     def _handle_ports_request(self):
         available_ports = self.model.list_available_ports()
