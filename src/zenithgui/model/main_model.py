@@ -1,6 +1,10 @@
 import serial.tools.list_ports
+
 from zenithgui.model import RocketData
-from zenithgui.config import DEV_MODE
+from zenithgui.util.write_csv import write_csv
+from zenithgui.config import messages as msg
+
+from zenithgui.config import config
 
 class MainModel():
     def __init__(self):
@@ -21,7 +25,7 @@ class MainModel():
         from zenithgui.communication import SerialReader, SerialSimulation
         if not self._serial_reader or not self._serial_reader.is_alive():
             # Passando canal de comunicação (queue) para o produtor
-            if DEV_MODE:
+            if config.DEV_MODE:
                 self._serial_reader = SerialSimulation(port, baudrate, queue, force)
             else:
                 self._serial_reader = SerialReader(port, baudrate, queue, force)
@@ -41,7 +45,10 @@ class MainModel():
             self._serial_reader.start()
 
     def reader_is_running(self) -> bool:
-        return self._serial_reader.is_running and not self._serial_reader.is_paused
+        if self._serial_reader:
+            return self._serial_reader.is_running and not self._serial_reader.is_paused
+        else:
+            return False
 
     def get_rocket_data(self) -> dict:
         """Obtém o histórico de dados coletados.
@@ -68,9 +75,13 @@ class MainModel():
         ports = serial.tools.list_ports.comports()
         available_ports = []
         if not ports:
-            return ["<Nenhuma porta encontrada>"]
+            return [msg.MESSAGE_CONNECTION_PORTS_NOT_FOUND]
 
         for port in ports:
             #if sys.platform.startswith("win") or "USB" in port.description or "ACM" in port.device:
             available_ports.append(port.device)
         return available_ports
+    
+    def save_data_to_csv(self, data: dict, path:str):
+        success = write_csv(data, path)
+        return success

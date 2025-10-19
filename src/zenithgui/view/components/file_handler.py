@@ -3,12 +3,10 @@ from PyQt5.QtWidgets import QWidget, QCheckBox, QLineEdit, QPushButton, QFileDia
 from PyQt5.QtGui import QColor, QPalette
 from PyQt5.QtCore import QDir
 
-from zenithgui.util.write_csv import write_csv
-
 class FileHandler(QWidget):
-    SAVE_STR = "~/path/to/recordings"
-    SELECTOR_DLG = "Selecione um diretório para salvar os dados"
-    SELECTOR_STR = "Open..."
+    PATH_LABEL_PLACEHOLDER = "/path/to/recordings"
+    DIR_SELECTOR_DIALOG_TITLE = "Selecione um diretório para salvar os dados"
+    OPEN_DIR_SELECTOR_BUTTON_TEXT = "Open..."
 
     def __init__(self, rec: QCheckBox):
         super().__init__()
@@ -23,7 +21,7 @@ class FileHandler(QWidget):
 
     def _create_widget(self):
         self.file_path = QLineEdit()
-        self.dir_selector = QPushButton(self.SELECTOR_STR)
+        self.dir_selector = QPushButton(self.OPEN_DIR_SELECTOR_BUTTON_TEXT)
 
     def _create_layout(self):
         self.content = QHBoxLayout()
@@ -35,7 +33,7 @@ class FileHandler(QWidget):
         self.dir_selector.pressed.connect(self._get_dir)
 
     def _apply_styles(self):
-        self.file_path.setPlaceholderText(self.SAVE_STR)
+        self.file_path.setPlaceholderText(self.PATH_LABEL_PLACEHOLDER)
         self.file_path.setReadOnly(True)
 
         self.file_path.setProperty("class", "input")
@@ -53,7 +51,7 @@ class FileHandler(QWidget):
    
         path = self.dialog.getExistingDirectory(
             parent=self,
-            caption=self.SELECTOR_DLG,
+            caption=self.DIR_SELECTOR_DIALOG_TITLE,
             directory=QDir.homePath(),
             options=options
         )
@@ -61,10 +59,6 @@ class FileHandler(QWidget):
         if path:
             self.file_path.setText(path)
             self.path = path
-
-    def save_data(self, data: dict[str, list], path: str):
-        if self.recording.isChecked():
-            write_csv(data, path)
 
     def get_file_path(self):
         return self.path

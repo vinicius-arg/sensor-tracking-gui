@@ -152,5 +152,14 @@ QFileDialog QPushButton:hover {
 }
 
 QLabel#Info {
+    font-family: Arial, Helvetica, sans-serif;
     font-size: 10pt;
+}
+
+QLabel[class="info"] {
+    color: #3c7ac2;
+}
+
+QLabel[class="error"] {
+    color: #cc4b4b;
 }

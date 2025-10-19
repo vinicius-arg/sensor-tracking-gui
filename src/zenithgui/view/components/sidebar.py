@@ -1,12 +1,15 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QFrame, QPushButton, QVBoxLayout
+from PyQt5.QtWidgets import QLabel, QFrame, QPushButton, QVBoxLayout
+from functools import partial
+
+from zenithgui.view.pages.sensor_details_page import SensorDetailsPage
 from zenithgui.config import config
 
 class SideBar(QFrame):
-    def __init__(self, page, sensors: list):
+    def __init__(self, parent):
         super().__init__()
 
-        self.page = page
-        self.sensors = sensors
+        self.parent_page = parent
+        self.sensors = config.ROCKET_DATA_MAP
 
         self._create_widgets()
         self._create_layouts()
@@ -23,8 +26,8 @@ class SideBar(QFrame):
         self.horizontal_bar.setFrameShape(QFrame.HLine)
         self.horizontal_bar.setFrameShadow(QFrame.Sunken)
 
-        self.sensors_buttons = []
-        for sensor in ["All sensors", *self.sensors.keys()]:
+        self.sensors_buttons: list[QPushButton] = []
+        for sensor in self.sensors.keys():
             button = QPushButton(sensor)
             button.setProperty("class", "sidebarButton")
             self.sensors_buttons.append(button)
@@ -42,7 +45,7 @@ class SideBar(QFrame):
 
     def _connect_signals(self):
         for button in self.sensors_buttons:
-            button.clicked.connect(self.page.show_sensor_details)
+            button.clicked.connect(partial(self._show_sensor_details, button.text()))
 
     def _apply_styles(self):
         self.subtitle.setWordWrap(True)
@@ -52,3 +55,9 @@ class SideBar(QFrame):
         self.app_name.setObjectName("AppTitle")
         self.subtitle.setObjectName("AppSubTitle")
         self.setObjectName("SideBar")
+        
+    def _show_sensor_details(self, name):
+        graph_keys: list = self.sensors[name]
+
+        dlg = SensorDetailsPage(self.parent_page, name, graph_keys)
+        dlg.exec_()

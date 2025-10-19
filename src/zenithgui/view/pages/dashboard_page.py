@@ -1,12 +1,15 @@
 from PyQt5.QtGui import QPalette, QColor
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
+from PyQt5.QtWidgets import QWidget, QHBoxLayout
 
 from zenithgui.view.components.sidebar import SideBar
 from zenithgui.view.components.dashboard import Dashboard
+from zenithgui.view.components.graph import Graph
 
 from zenithgui import config
 
 class DashboardPage(QWidget):
+    GRAPH_GRID_COLUMNS = 3
+
     def __init__(self):
         super().__init__()
         self.setAutoFillBackground(True)
@@ -20,15 +23,17 @@ class DashboardPage(QWidget):
 
         self.full_history = self.dashboard.full_history
         self.window_data_processed = int(0)
+        self.rocket_data = {}
+
+        self.notification_label = self.dashboard.notification_label
     
     def _load_sensors(self):
-        self.sensors = config.DATA_MAP
+        self.sensors = config.ROCKET_DATA_MAP
+        self.sensors_alias = config.ROCKET_DATA_ALIAS
 
     def _create_widgets(self):
-        self.sidebar = SideBar(self, self.sensors)
-        self.dashboard = Dashboard(self)
-
-        self.info = self.dashboard.info
+        self.dashboard = Dashboard(parent=self)
+        self.sidebar = SideBar(parent=self)
         
     def _create_layouts(self):
         self.main_layout = QHBoxLayout()
@@ -54,17 +59,30 @@ class DashboardPage(QWidget):
         self.checkbox = self.dashboard.checkbox
         self.file_handler = self.dashboard.file_handler
 
+    def create_graphs(self, sensors, graph_list, graph_grid):
+        for name in sensors:
+            fancy_name = self.get_sensor_name(name)
+            g = Graph(fancy_name).get_graph()
+            row, col = divmod(g._id, self.GRAPH_GRID_COLUMNS)
+            graph_grid.addWidget(g.frame, row, col)
+            
+            graph_list[name] = g
+
     def update_data(self, rocket_data: dict):
-        for name, data in rocket_data.items():
-            if name in self.dashboard.graphs:
-                g = self.dashboard.graphs[name]         
+        self.rocket_data = rocket_data
+        
+    def update_graphs(self, graph_list):
+        for name, data in self.rocket_data.items():
+            if name in graph_list:
+                g = graph_list[name]         
                 g.curve.setData(data)
+
                 # Atualização de último valor
                 last_value = data[-1]
                 g.current.setText(f"{last_value:.2f}")
 
                 if self.checkbox.isChecked():
-                    self._save_data(rocket_data)
+                    self._save_data(self.rocket_data)
 
     def _save_data(self, rocket_data):
         self.window_data_processed += 1
@@ -81,6 +99,8 @@ class DashboardPage(QWidget):
             if name in self.dashboard.graphs:
                 self.full_history.setdefault(name, [])
                 self.full_history[name].extend(data)
-
-    def show_sensor_details(self):
-        ...
+                
+    def get_sensor_name(self, raw_name):
+        for key, value in self.sensors_alias.items():
+            if raw_name in key:
+                return value

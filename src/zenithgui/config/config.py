@@ -2,14 +2,17 @@
 # Usar a classe QSettings. Isso permitirá salvar a última porta e baudrate selecionados pelo usuário, 
 # melhorando a usabilidade.
 
-APP_NAME = "ZeSTIn"
-APP_SUBTITLE = "Zenith's Sensor Telemetry Interface"
-VERSION = "1.0.0"
-
 DEV_MODE = True
 
+APP_NAME = "ZeSTIn"
+APP_SUBTITLE = "Zenith's Sensor Telemetry Interface"
 DATA_WINDOW_LENGTH = 50
-TIME_PQUEUE = 100 #ms
+
+PACKET_QUEUE_MS_TIME = 100
+GRAPH_UPDATE_MS_TIME = 100
+NOTIFICATION_DISAPPEAR_MS_TIME = 5000
+
+DEFAULT_BAUDRATE = "9600"
 
 SUPPORTED_BAUDRATES = [
     "1200", 
@@ -24,8 +27,6 @@ SUPPORTED_BAUDRATES = [
     "460800", 
     "921600"
     ]
-
-DEFAULT_BAUDRATE = "9600"
 
 TRACKABLE_DATA = [
     "temperature", 
@@ -42,9 +43,9 @@ TRACKABLE_DATA = [
     "speed_xy"
     ]
 
-DATA_MAP: dict[str, list[str]] = {
-    "Acceleration": ["accel_x", "accel_y", "accel_z"],
-    "Gyro": ["gyro_x", "gyro_y", "gyro_z"],
+ROCKET_DATA_MAP: dict[str, list[str]] = {
+    "Acceleration": ["accel_{}".format(x) for x in "xyz"],
+    "Gyro": ["gyro_{}".format(x) for x in "xyz"],
     "Pressure": ["pressure"],
     "Height": ["height"],
     "Temperature": ["temperature"],
@@ -52,7 +53,7 @@ DATA_MAP: dict[str, list[str]] = {
     "XY Speed": ["speed_xy"]
     }
 
-DATA_ALIAS: dict[str, list[str]] = {
+ROCKET_DATA_ALIAS: dict[str, list[str]] = {
     "accel_x": "Acceleration_x",
     "accel_y": "Acceleration_y",
     "accel_z": "Acceleration_z",

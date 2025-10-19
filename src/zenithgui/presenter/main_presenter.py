@@ -4,9 +4,11 @@ from queue import Queue
 from zenithgui.model.main_model import MainModel
 from zenithgui.view.main_window import MainWindow
 from zenithgui.communication import Packet, PacketType
-from zenithgui.config.config import TIME_PQUEUE
 
-class MainPresenter:    
+from zenithgui.config import config
+from zenithgui.config import messages as msg
+
+class MainPresenter:
     def __init__(self, model: MainModel, view: MainWindow):
         self.packet_queue = Queue()
         self.queue_timer = QTimer()
@@ -30,30 +32,42 @@ class MainPresenter:
             rocket_data = self.model.get_rocket_data()
             self.view.update_graphs(rocket_data)
         elif packet.type == PacketType.STATUS:
-            self.view.show_info_as_popup(True, packet.payload)
+            self.view.show_info_as_notification(True, packet.payload)
         elif packet.type == PacketType.ERROR:
             self.view.show_info_as_popup(False, packet.payload)
 
     def start_tracking(self):
         self.model.start_tracking()
-        self.queue_timer.start(TIME_PQUEUE) 
+        self.queue_timer.start(config.PACKET_QUEUE_MS_TIME)
         self.set_buttons_state()
 
     def stop_tracking(self):
-        self.queue_timer.stop()
-        self.model.stop_tracking()
-        self.set_buttons_state()
-
-        if self.view.checkbox.isChecked():
-            path = self.view.file_handler.path
-            data = self.view.history
-            self.view.file_handler.save_data(data, path)
+        if self.model.reader_is_running():
+            self.queue_timer.stop()
+            self.model.stop_tracking()
+            self.set_buttons_state()
             self.view.start_btn.setEnabled(False)
-    
+
+            if self.view.checkbox.isChecked():
+                path = self.view.file_handler.path
+                data = self.view.history
+                success = self.model.save_data_to_csv(data, path)
+
+                message_scs = msg.NOTIFICATION_TRACKING_SAVED.format(path)
+                message_err = msg.NOTIFICATION_TRACKING_SAVE_ERROR
+
+                self.view.show_info_as_notification(
+                    success, 
+                    message_scs if success else message_err)
+            else:
+                self.view.show_info_as_notification(True, msg.NOTIFICATION_TRACKING_STOPPED)
+
     def pause_tracking(self):
         self.queue_timer.stop()
         self.model.pause_tracking()
         self.set_buttons_state()
+
+        self.view.show_info_as_notification(True, msg.NOTIFICATION_TRACKING_PAUSED)
 
     def set_buttons_state(self):
         state = self.model.reader_is_running()

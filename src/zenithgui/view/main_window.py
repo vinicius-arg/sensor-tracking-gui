@@ -1,19 +1,17 @@
 from PyQt5.QtWidgets import QMainWindow, QStackedWidget
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QIcon
 
 from zenithgui.view.components.custom_msg import MessageWindow
-
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
-
-def align_center(screen, width, height):
-    return ((screen.width() - width) // 2, (screen.height() - height) // 2)
+from zenithgui.config import config
 
 class MainWindow(QMainWindow):
     def __init__(self, screen, width, height, icon_path):
         super().__init__()
-        x, y = align_center(screen, width, height)
-        self.setWindowTitle("Zenith GUI")
+        x, y = self.align_center(screen, width, height)
+        self.setWindowTitle(config.APP_NAME)
         self.setGeometry(x, y, width, height)
         self.setWindowIcon(QIcon(icon_path))
 
@@ -31,6 +29,8 @@ class MainWindow(QMainWindow):
         self._promote_signals()
         self._promote_buttons()
 
+        # Variáveis promovidas
+        self.notification_label = self.dashboard_page.notification_label
         self.history = self.dashboard_page.full_history
 
     def _promote_buttons(self):
@@ -61,7 +61,30 @@ class MainWindow(QMainWindow):
         dlg.exec_()
 
     def show_info_as_notification(self, success, message):
-        ...
+        if success:
+            self.notification_label.setText(f"Info:: {message}")
+            self.notification_label.setProperty("class", "info")
+        else:
+            self.notification_label.setText(f"Error:: {message}")
+            self.notification_label.setProperty("class", "error")
+
+        self.notification_label.style().unpolish(self.notification_label)
+        self.notification_label.style().polish(self.notification_label)
+
+        QTimer.singleShot(
+            config.NOTIFICATION_DISAPPEAR_MS_TIME,
+            lambda: self.notification_label.setText(""))
+
+    def closeEvent(self, a0):
+        """Chamado automaticamente quando o usuário fecha o programa.
+           Encerra as threads e salva o monitoramento, caso esteja habilitado.
+        """
+        self.stop_tracking.emit()
+
+        return super().closeEvent(a0)
 
     def load_available_ports(self, ports):
         self.connection_page.port_selector.addItems(ports)
+
+    def align_center(self, screen, width, height):
+        return ((screen.width() - width) // 2, (screen.height() - height) // 2)
