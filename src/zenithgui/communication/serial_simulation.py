@@ -44,6 +44,8 @@ class SerialSimulation(Thread):
                 if not self._pause_event.is_set():
                     packet = Packet.as_data(data)
                     Sender.send_packet(self.packet_queue, packet)
+                else:
+                    time.sleep(0.1)
             else:
                 time.sleep(0.1)
 

@@ -50,7 +50,7 @@ class TelemetryPacket(ctypes.LittleEndianStructure):
 class RocketData():
     """Classe central que armazena o estado da aplicação.
     """
-    def __init__(self, history_size: int = 50):
+    def __init__(self):
         super().__init__()
         self._latest_packet = TelemetryPacket()
         self._history_size = config.DATA_WINDOW_LENGTH
@@ -65,7 +65,7 @@ class RocketData():
 
     def _setup_data(self):
         self._data = {
-            "status": deque(maxlen=self._history_size),
+            "status": int(),
             "temperature": deque(maxlen=self._history_size),
             "accel_x": deque(maxlen=self._history_size),
             "accel_y": deque(maxlen=self._history_size),
@@ -97,9 +97,13 @@ class RocketData():
             if field in config.TRACKABLE_DATA:
                 try:
                     value = getattr(self._latest_packet, field)
+                except KeyError as err:
+                    print(err)
+
+                if field == "status":
+                    self._data["status"] = value
+                else:
                     self._update_field(value, self._data[field])
-                except KeyError:
-                    pass
 
 def main():
     r = RocketData()

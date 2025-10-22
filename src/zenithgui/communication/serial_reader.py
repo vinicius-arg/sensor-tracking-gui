@@ -8,8 +8,8 @@ from queue import Queue
 from zenithgui.communication.packet import Packet
 from zenithgui.communication.sender import Sender
 from zenithgui.model.telemetry import TelemetryPacket
+from zenithgui.config import config
 from zenithgui.util import _calculate_crc
-from zenithgui.config import DEV_MODE
 
 # Bytes de início de quadro (Start of Frame)
 SOF = b'\xAA\xBB'
@@ -47,20 +47,20 @@ class SerialReader(Thread):
 
         while self.is_running:
             try:
-                if self._check_sof() and self._can_recv_packet():
-                    data = self.serial.read(PACKET_SIZE)
-                    if not self._pause_event.is_set():
+                if self._sof_found():
+                    if self._pause_event.is_set() or not self._can_recv_packet():
+                        self._wait()
+                    else:
+                        data = self.serial.read(PACKET_SIZE)
                         packet = Packet.as_data(data)
 
                         if self._packet_is_valid(data):
                             Sender.send_packet(self.packet_queue, packet)
                         else:
                             Sender.send_packet_with_note(
-                                queue=self.packet_queue, 
-                                msg=self.CORRUPT_PACKET_MSG, 
-                                packet=packet)
-                else:
-                    time.sleep(0.1)
+                            queue=self.packet_queue, 
+                            msg=self.CORRUPT_PACKET_MSG, 
+                            packet=packet)
             except SerialException as e: # Vamos tentar não interromper a conexão
                 err_packet = Packet.as_error(f"{self.CORRUPT_PACKET_MSG}\n{e}")
                 Sender.send_packet(self.packet_queue, err_packet)
@@ -73,14 +73,20 @@ class SerialReader(Thread):
         self._pause_event.clear()
         self.is_paused = False
 
+    def _wait(self):
+        time.sleep(config.PACKET_QUEUE_MS_TIME / 1000)
+
+    def _sof_found(self):
+        a = self.serial.read(1) == SOF[0]
+        b = self.serial.read(1) == SOF[1]
+
+        return a and b
+
     def _can_recv_packet(self):
         return self.packet_queue.qsize() == 0
     
     def _packet_is_valid(self, data):
         return len(data) == PACKET_SIZE
-
-    def _check_sof(self) -> bool:
-        return self.serial.read(len(SOF)) == SOF
 
     def _connect(self, port, baudrate=9600, force=False):
         """Realiza a conexão com a porta serial passada como argumento.

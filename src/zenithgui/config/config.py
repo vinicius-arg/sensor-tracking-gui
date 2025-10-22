@@ -29,6 +29,7 @@ SUPPORTED_BAUDRATES = [
     ]
 
 TRACKABLE_DATA = [
+    "status",
     "temperature", 
     "pressure",
     "height",

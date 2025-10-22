@@ -53,7 +53,7 @@ class Dashboard(QWidget):
         self.control_bar.addWidget(self.checkbox)
         self.control_bar.addWidget(self.file_handler)
 
-        self.parent_page.create_graphs(config.TRACKABLE_DATA, self.graphs, self.graph_grid)
+        self.parent_page.create_graphs(self.sensors_to_plot, self.graphs, self.graph_grid)
         self.update_graphs_timer.start(config.GRAPH_UPDATE_MS_TIME)
 
         self.content.addLayout(self.control_bar, stretch=1)

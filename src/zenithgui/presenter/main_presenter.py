@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QTimer
-from queue import Queue
+from queue import Queue, Empty
 
 from zenithgui.model.main_model import MainModel
 from zenithgui.view.main_window import MainWindow
@@ -26,15 +26,18 @@ class MainPresenter:
         self.view.stop_tracking.connect(self.stop_tracking)
 
     def _process_queue(self):
-        packet: Packet = self.packet_queue.get()
-        if packet.type == PacketType.DATA:
-            self.model.update_rocket_data(packet.payload)
-            rocket_data = self.model.get_rocket_data()
-            self.view.update_graphs(rocket_data)
-        elif packet.type == PacketType.STATUS:
-            self.view.show_info_as_notification(True, packet.payload)
-        elif packet.type == PacketType.ERROR:
-            self.view.show_info_as_popup(False, packet.payload)
+        try:
+            packet: Packet = self.packet_queue.get_nowait()
+            if packet.type == PacketType.DATA:
+                self.model.update_rocket_data(packet.payload)
+                rocket_data = self.model.get_rocket_data()
+                self.view.update_graphs(rocket_data)
+            elif packet.type == PacketType.STATUS:
+                self.view.show_info_as_notification(True, packet.payload)
+            elif packet.type == PacketType.ERROR:
+                self.view.show_info_as_popup(False, packet.payload)
+        except Empty:
+            pass
 
     def start_tracking(self):
         self.model.start_tracking()
