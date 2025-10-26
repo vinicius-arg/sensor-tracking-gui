@@ -7,6 +7,7 @@ from zenithgui.view.components.graph import Graph
 
 from zenithgui.config import config
 from zenithgui.model.telemetry import StatusFlags
+from zenithgui.util import get_fancy_name
 
 class DashboardPage(QWidget):
     GRAPH_GRID_COLUMNS = 3
@@ -14,6 +15,8 @@ class DashboardPage(QWidget):
     def __init__(self):
         super().__init__()
         self.setAutoFillBackground(True)
+
+        self.status = {}
 
         self._load_sensors()
         self._create_widgets()
@@ -25,7 +28,6 @@ class DashboardPage(QWidget):
         self.full_history = self.dashboard.full_history
         self.window_data_processed = int(0)
         self.rocket_data = {}
-        self.status = {} # TODO Transformar em elemento gráfico
 
         self.notification_label = self.dashboard.notification_label
     
@@ -34,7 +36,7 @@ class DashboardPage(QWidget):
         self.sensors_alias = config.ROCKET_DATA_ALIAS
 
     def _create_widgets(self):
-        self.dashboard = Dashboard(parent=self)
+        self.dashboard = Dashboard(parent=self, status=self.status)
         self.sidebar = SideBar(parent=self)
         
     def _create_layouts(self):
@@ -64,7 +66,7 @@ class DashboardPage(QWidget):
     def create_graphs(self, sensors, graph_list, graph_grid):
         sensors_to_plot = [e for e in sensors if e != "status"]
         for index, name in enumerate(sensors_to_plot, start=0):
-            fancy_name = self.get_sensor_name(name)
+            fancy_name = get_fancy_name(name, config.ROCKET_DATA_ALIAS)
             g = Graph(fancy_name).get_graph()
             row, col = divmod(index, self.GRAPH_GRID_COLUMNS)
             graph_grid.addWidget(g.frame, row, col)
@@ -109,8 +111,3 @@ class DashboardPage(QWidget):
             if name in self.dashboard.graphs:
                 self.full_history.setdefault(name, [])
                 self.full_history[name].extend(data)
-                
-    def get_sensor_name(self, raw_name):
-        for key, value in self.sensors_alias.items():
-            if raw_name in key:
-                return value

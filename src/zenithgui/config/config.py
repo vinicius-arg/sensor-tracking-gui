@@ -14,7 +14,7 @@ NOTIFICATION_DISAPPEAR_MS_TIME = 5000
 
 DEFAULT_BAUDRATE = "9600"
 
-SUPPORTED_BAUDRATES = [
+SUPPORTED_BAUDRATES: list[str] = [
     "1200", 
     "2400", 
     "4800", 
@@ -28,7 +28,7 @@ SUPPORTED_BAUDRATES = [
     "921600"
     ]
 
-TRACKABLE_DATA = [
+TRACKABLE_DATA: list[str] = [
     "status",
     "temperature", 
     "pressure",
@@ -44,6 +44,14 @@ TRACKABLE_DATA = [
     "speed_xy"
     ]
 
+STATUS_DATA: list[str] = [
+    "circuit_on",
+    "mpu_on",
+    "bmp_on",
+    "gps_on",
+    "sd_on"
+]
+
 ROCKET_DATA_MAP: dict[str, list[str]] = {
     "Acceleration": ["accel_{}".format(x) for x in "xyz"],
     "Gyro": ["gyro_{}".format(x) for x in "xyz"],
@@ -54,7 +62,7 @@ ROCKET_DATA_MAP: dict[str, list[str]] = {
     "XY Speed": ["speed_xy"]
     }
 
-ROCKET_DATA_ALIAS: dict[str, list[str]] = {
+ROCKET_DATA_ALIAS: dict[str, str] = {
     "accel_x": "Acceleration_x",
     "accel_y": "Acceleration_y",
     "accel_z": "Acceleration_z",
@@ -68,3 +76,11 @@ ROCKET_DATA_ALIAS: dict[str, list[str]] = {
     "latitude": "Latitude",
     "speed_xy": "XY Speed"
     }
+
+STATUS_DATA_ALIAS: dict[str, str] = {
+    "circuit_on": "PWR",
+    "mpu_on": "MPU",
+    "bmp_on": "BMP",
+    "gps_on": "GPS",
+    "sd_on": "SD"
+}

@@ -44,7 +44,7 @@ class TelemetryPacket(ctypes.LittleEndianStructure):
         ("longitude", ctypes.c_float),
         ("speed_xy", ctypes.c_float),
         ("battery", ctypes.c_float),
-        ("crc", ctypes.c_uint16),
+        #("crc", ctypes.c_uint16),
     ]
 
 class RocketData():

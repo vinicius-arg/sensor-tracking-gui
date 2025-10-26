@@ -15,6 +15,10 @@ QLabel[class="title"] {
     color: #d6d6d6;
 }
 
+QLabel[class="statusLabel"] {
+    font-size: 9pt;
+}
+
 QLabel#AppTitle {
     font-size: 16pt;
     font-family: 'BBH Sans Hegarty', Arial, Helvetica, sans-serif;

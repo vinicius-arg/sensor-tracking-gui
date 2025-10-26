@@ -1,9 +1,10 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QCheckBox, QLabel
 from PyQt5.QtCore import pyqtSignal, QTimer
 
-from zenithgui.view.components.graph import Graph
-from zenithgui.view.components.file_handler import FileHandler
 from zenithgui.config import config
+from zenithgui.view.components.graph import Graph
+from zenithgui.view.components.status import StatusMonitor
+from zenithgui.view.components.file_handler import FileHandler
 
 class Dashboard(QWidget):
     RECORD_SAMPLES_TEXT = "Record samples"
@@ -15,11 +16,12 @@ class Dashboard(QWidget):
     pause_tracking = pyqtSignal()
     stop_tracking = pyqtSignal()
 
-    def __init__(self, parent):
+    def __init__(self, parent, status):
         super().__init__()
 
         self.parent_page = parent
         self.graphs: dict[str, Graph] = {}
+        self.status = status
 
         self.sensors_to_plot = config.TRACKABLE_DATA
         self.sensors_alias = config.ROCKET_DATA_ALIAS
@@ -39,6 +41,7 @@ class Dashboard(QWidget):
         self.checkbox = QCheckBox(self.RECORD_SAMPLES_TEXT)
 
         self.file_handler = FileHandler(rec=self.checkbox)
+        self.status_monitor = StatusMonitor(state=self.status)
 
         self.notification_label = QLabel()
 
@@ -57,6 +60,7 @@ class Dashboard(QWidget):
         self.update_graphs_timer.start(config.GRAPH_UPDATE_MS_TIME)
 
         self.content.addLayout(self.control_bar, stretch=1)
+        self.content.addWidget(self.status_monitor)
         self.content.addLayout(self.graph_grid, stretch=5)
 
         self.content.addWidget(self.notification_label)

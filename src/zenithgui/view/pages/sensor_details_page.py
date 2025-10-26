@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QGridLayout
+from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtCore import QTimer
 
 from zenithgui.view.components.graph import Graph
@@ -18,6 +19,7 @@ class SensorDetailsPage(QDialog):
         self._create_widgets()
         self._create_layouts()
         self._connect_signals()
+        self._apply_styles()
 
     def _create_widgets(self):
         self.title = QLabel(self.name)
@@ -39,4 +41,7 @@ class SensorDetailsPage(QDialog):
     def _connect_signals(self):
         self.update_graphs_timer.timeout.connect(self._auto_update_graphs)
 
-#TODO Estilos dos graficos e informações adicionais
+    def _apply_styles(self):
+            palette = self.palette()
+            palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
+            self.setPalette(palette)
