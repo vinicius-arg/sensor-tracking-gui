@@ -8,8 +8,8 @@ from queue import Queue
 from zenithgui.communication.packet import Packet
 from zenithgui.communication.sender import Sender
 from zenithgui.model.telemetry import TelemetryPacket
-from zenithgui.config import config
-from zenithgui.util import _calculate_crc
+from zenithgui.config import Config
+from zenithgui.util import CalcUtils
 
 # Bytes de início de quadro (Start of Frame)
 SOF = b'\xAA\xBB'
@@ -74,7 +74,7 @@ class SerialReader(Thread):
         self.is_paused = False
 
     def _wait(self):
-        time.sleep(config.PACKET_QUEUE_MS_TIME / 1000)
+        time.sleep(Config.PACKET_QUEUE_MS_TIME / 1000)
 
     def _sof_found(self):
         a = self.serial.read(1) == SOF[0]

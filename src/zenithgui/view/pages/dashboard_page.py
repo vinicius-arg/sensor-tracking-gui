@@ -5,9 +5,9 @@ from zenithgui.view.components.sidebar import SideBar
 from zenithgui.view.components.dashboard import Dashboard
 from zenithgui.view.components.graph import Graph
 
-from zenithgui.config import config
+from zenithgui.config import Config
 from zenithgui.model.telemetry import StatusFlags
-from zenithgui.util import get_fancy_name
+from zenithgui.util import FormatUtils
 
 class DashboardPage(QWidget):
     GRAPH_GRID_COLUMNS = 3
@@ -32,8 +32,8 @@ class DashboardPage(QWidget):
         self.notification_label = self.dashboard.notification_label
     
     def _load_sensors(self):
-        self.sensors = config.ROCKET_DATA_MAP
-        self.sensors_alias = config.ROCKET_DATA_ALIAS
+        self.sensors = Config.ROCKET_DATA_MAP
+        self.sensors_alias = Config.ROCKET_DATA_ALIAS
 
     def _create_widgets(self):
         self.dashboard = Dashboard(parent=self, status=self.status)
@@ -66,7 +66,7 @@ class DashboardPage(QWidget):
     def create_graphs(self, sensors, graph_list, graph_grid):
         sensors_to_plot = [e for e in sensors if e != "status"]
         for index, name in enumerate(sensors_to_plot, start=0):
-            fancy_name = get_fancy_name(name, config.ROCKET_DATA_ALIAS)
+            fancy_name = FormatUtils.get_fancy_name(name, Config.ROCKET_DATA_ALIAS)
             g = Graph(fancy_name).get_graph()
             row, col = divmod(index, self.GRAPH_GRID_COLUMNS)
             graph_grid.addWidget(g.frame, row, col)
@@ -104,10 +104,14 @@ class DashboardPage(QWidget):
             self.window_data_processed = 0
 
     def _data_window_snapshotted(self):
-        return self.window_data_processed == config.DATA_WINDOW_LENGTH
+        return self.window_data_processed == Config.DATA_WINDOW_LENGTH
     
     def _save_data_to_history(self, rocket_data: dict):
         for name, data in rocket_data.items():
             if name in self.dashboard.graphs:
                 self.full_history.setdefault(name, [])
                 self.full_history[name].extend(data)
+
+    def update_page(self):
+        self.update_graphs(self.dashboard.graphs)
+        self.dashboard.update_component()

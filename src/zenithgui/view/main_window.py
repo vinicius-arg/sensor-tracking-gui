@@ -5,13 +5,13 @@ from PyQt5.QtGui import QIcon
 from zenithgui.view.components.custom_msg import MessageWindow
 from zenithgui.view.pages.connection_page import ConnectionPage
 from zenithgui.view.pages.dashboard_page import DashboardPage
-from zenithgui.config import config
+from zenithgui.config import Config
 
 class MainWindow(QMainWindow):
     def __init__(self, screen, width, height, icon_path):
         super().__init__()
         x, y = self.align_center(screen, width, height)
-        self.setWindowTitle(config.APP_NAME)
+        self.setWindowTitle(Config.APP_NAME)
         self.setGeometry(x, y, width, height)
         self.setWindowIcon(QIcon(icon_path))
 
@@ -72,7 +72,7 @@ class MainWindow(QMainWindow):
         self.notification_label.style().polish(self.notification_label)
 
         QTimer.singleShot(
-            config.NOTIFICATION_DISAPPEAR_MS_TIME,
+            Config.NOTIFICATION_DISAPPEAR_MS_TIME,
             lambda: self.notification_label.setText(""))
 
     def closeEvent(self, a0):
@@ -88,3 +88,6 @@ class MainWindow(QMainWindow):
 
     def align_center(self, screen, width, height):
         return ((screen.width() - width) // 2, (screen.height() - height) // 2)
+    
+    def update_ui(self):
+        self.dashboard_page.update_page()

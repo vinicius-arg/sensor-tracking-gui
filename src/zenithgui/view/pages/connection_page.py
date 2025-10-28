@@ -2,7 +2,7 @@ from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QCheckBox
 from PyQt5.QtCore import Qt, pyqtSignal, QTimer
 
-from zenithgui.config import config
+from zenithgui.config import Config
 
 class ConnectionPage(QWidget):
     connection_requested = pyqtSignal(str, int, bool)
@@ -39,8 +39,8 @@ class ConnectionPage(QWidget):
         self.baudrate_label.setProperty("class", "text")
         self.baudrate_selector = QComboBox()
         self.baudrate_selector.setProperty("class", "input")
-        self.baudrate_selector.addItems(config.SUPPORTED_BAUDRATES)
-        self.baudrate_selector.setCurrentText(config.DEFAULT_BAUDRATE)
+        self.baudrate_selector.addItems(Config.SUPPORTED_BAUDRATES)
+        self.baudrate_selector.setCurrentText(Config.DEFAULT_BAUDRATE)
 
         self.force_connection = QCheckBox("Force connection")
         self.force_connection.setProperty("class", "text")

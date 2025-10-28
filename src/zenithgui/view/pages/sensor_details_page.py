@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import QDialog, QLabel, QVBoxLayout, QGridLayout
 from PyQt5.QtGui import QPalette, QColor
 from PyQt5.QtCore import QTimer
 
+from zenithgui.config import Config
+from zenithgui.util import ThemeUtils
 from zenithgui.view.components.graph import Graph
-from zenithgui.config import config
 
 class SensorDetailsPage(QDialog):
     def __init__(self, parent, name, keys):
@@ -31,17 +32,22 @@ class SensorDetailsPage(QDialog):
         self.content.addLayout(self.graph_grid)
 
         self.parent_page.create_graphs(self.graph_keys, self.graphs, self.graph_grid)
-        self.update_graphs_timer.start(config.GRAPH_UPDATE_MS_TIME)
+        self.update_graphs_timer.start(Config.UI_UPDATE_MS_TIME)
 
         self.setLayout(self.content)
 
-    def _auto_update_graphs(self):
+    def _update_graphs(self):
         self.parent_page.update_graphs(self.graphs)
 
     def _connect_signals(self):
-        self.update_graphs_timer.timeout.connect(self._auto_update_graphs)
+        self.update_graphs_timer.timeout.connect(self._update_graphs)
 
     def _apply_styles(self):
-            palette = self.palette()
-            palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
-            self.setPalette(palette)
+        ThemeUtils.setup_and_apply_stylesheets(self)
+
+        palette = self.palette()
+        palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
+        self.setPalette(palette)
+
+        self.title.setProperty("class", "title")
+

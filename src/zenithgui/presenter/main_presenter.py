@@ -4,16 +4,16 @@ from queue import Queue, Empty
 from zenithgui.model.main_model import MainModel
 from zenithgui.view.main_window import MainWindow
 from zenithgui.communication import Packet, PacketType
-
-from zenithgui.config import config
-from zenithgui.config import messages as msg
+from zenithgui.config import Messages as msg, Config
 
 class MainPresenter:
     def __init__(self, model: MainModel, view: MainWindow):
-        self.packet_queue = Queue()
-        self.queue_timer = QTimer()
         self.model = model
         self.view = view
+        
+        self.packet_queue = Queue()
+        self.queue_timer = QTimer()
+        self.update_ui_timer = QTimer()
 
         self._connect_signals()
 
@@ -21,6 +21,7 @@ class MainPresenter:
         self.view.connection_requested.connect(self._handle_connection_request)
         self.view.available_ports_requested.connect(self._handle_ports_request)
         self.queue_timer.timeout.connect(self._process_queue)
+        self.update_ui_timer.timeout.connect(self.__update_ui)
         self.view.start_tracking.connect(self.start_tracking)
         self.view.pause_tracking.connect(self.pause_tracking)
         self.view.stop_tracking.connect(self.stop_tracking)
@@ -41,12 +42,14 @@ class MainPresenter:
 
     def start_tracking(self):
         self.model.start_tracking()
-        self.queue_timer.start(config.PACKET_QUEUE_MS_TIME)
+        self.queue_timer.start(Config.PACKET_QUEUE_MS_TIME)
+        self.update_ui_timer.start(Config.UI_UPDATE_MS_TIME)
         self.set_buttons_state()
 
     def stop_tracking(self):
         if self.model.reader_is_running():
             self.queue_timer.stop()
+            self.update_ui_timer.stop()
             self.model.stop_tracking()
             self.set_buttons_state()
             self.view.start_btn.setEnabled(False)
@@ -67,6 +70,7 @@ class MainPresenter:
 
     def pause_tracking(self):
         self.queue_timer.stop()
+        self.update_ui_timer.stop()
         self.model.pause_tracking()
         self.set_buttons_state()
 
@@ -95,3 +99,6 @@ class MainPresenter:
         if success:
             self.view.goto_dashboard_page()
             self.set_buttons_state()
+
+    def __update_ui(self):
+        self.view.update_ui()

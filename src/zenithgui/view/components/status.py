@@ -1,11 +1,9 @@
-from dataclasses import dataclass
-
 from PyQt5.QtWidgets import QWidget, QLabel, QHBoxLayout
 from PyQt5.QtGui import QPainter, QPen, QBrush
-from PyQt5.QtCore import Qt, QTimer
+from PyQt5.QtCore import Qt
 
-from zenithgui.config import config
-from zenithgui.util import get_fancy_name
+from zenithgui.config import Config
+from zenithgui.util import FormatUtils
 
 class QDisc(QWidget):
     """Widget customizado que desenha um círculo."""
@@ -68,15 +66,15 @@ class StatusMonitor(QWidget):
         self.status = state
 
         self.status_indicators: dict[str, StatusIndicator] = {}
-        self.status_alias = config.STATUS_DATA_ALIAS
+        self.status_alias = Config.STATUS_DATA_ALIAS
 
         self.__create_widget()
         self.__create_layout()
         self.__apply_styles()
 
     def __create_widget(self):
-        for data in config.STATUS_DATA:
-            item = StatusIndicator(size=20, text=get_fancy_name(data, config.STATUS_DATA_ALIAS))
+        for data in Config.STATUS_DATA:
+            item = StatusIndicator(size=20, text=FormatUtils.get_fancy_name(data, Config.STATUS_DATA_ALIAS))
             self.status_indicators[data] = item
     
     def __create_layout(self):
@@ -93,5 +91,5 @@ class StatusMonitor(QWidget):
 
     def update_component(self):
         for key, value in self.status.items():
-            self.status_indicators[key].set_state(value == "1")
+            self.status_indicators[key].set_state(value == 1)
 

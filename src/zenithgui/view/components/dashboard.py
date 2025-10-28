@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QGridLayout, QCheckBox, QLabel
-from PyQt5.QtCore import pyqtSignal, QTimer
+from PyQt5.QtCore import pyqtSignal
 
-from zenithgui.config import config
+from zenithgui.config import Config
 from zenithgui.view.components.graph import Graph
 from zenithgui.view.components.status import StatusMonitor
 from zenithgui.view.components.file_handler import FileHandler
@@ -23,11 +23,9 @@ class Dashboard(QWidget):
         self.graphs: dict[str, Graph] = {}
         self.status = status
 
-        self.sensors_to_plot = config.TRACKABLE_DATA
-        self.sensors_alias = config.ROCKET_DATA_ALIAS
-        
+        self.sensors_to_plot = Config.TRACKABLE_DATA
+        self.sensors_alias = Config.ROCKET_DATA_ALIAS        
         self.full_history: dict = {}
-        self.update_graphs_timer = QTimer()
 
         self._create_widgets()
         self._create_layouts()
@@ -57,7 +55,6 @@ class Dashboard(QWidget):
         self.control_bar.addWidget(self.file_handler)
 
         self.parent_page.create_graphs(self.sensors_to_plot, self.graphs, self.graph_grid)
-        self.update_graphs_timer.start(config.GRAPH_UPDATE_MS_TIME)
 
         self.content.addLayout(self.control_bar, stretch=1)
         self.content.addWidget(self.status_monitor)
@@ -68,13 +65,12 @@ class Dashboard(QWidget):
         self.setLayout(self.content)
 
     def _connect_signals(self):
-        self.update_graphs_timer.timeout.connect(self._auto_update_graphs)
         self.start_btn.pressed.connect(self.start_tracking.emit)
         self.pause_btn.pressed.connect(self.pause_tracking.emit)
         self.stop_btn.pressed.connect(self.stop_tracking.emit)
 
-    def _auto_update_graphs(self):
-        self.parent_page.update_graphs(self.graphs)
+    def update_component(self):
+        self.status_monitor.update_component()
 
     def _apply_styles(self):
         self.start_btn.setProperty("class", "menuBtn")

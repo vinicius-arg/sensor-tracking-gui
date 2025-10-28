@@ -1,15 +1,4 @@
-from .config import *
+from .config import Config
+from .messages import Messages
 
-__all__ = [
-    "APP_NAME",
-    "APP_SUBTITLE",
-    "VERSION",
-    "DEV_MODE",
-    "SUPPORTED_BAUDRATES",
-    "DEFAULT_BAUDRATE",
-    "TRACKABLE_DATA",
-    "DATA_WINDOW_LEN",
-    "TIME_PQUEUE",
-    "DATA_MAP",
-    "DATA_ALIAS"
-    ]
+__all__ = ["Config", "Messages"]

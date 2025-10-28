@@ -1,7 +1,7 @@
 import ctypes
 from collections import deque
 
-from zenithgui.config import config
+from zenithgui.config import Config
 
 # Nota de Engenharia: A discrepância "Bateria" foi resolvida adicionando o campo
 # 'battery'. O firmware do ESP32 precisa ser atualizado para incluir este
@@ -53,7 +53,7 @@ class RocketData():
     def __init__(self):
         super().__init__()
         self._latest_packet = TelemetryPacket()
-        self._history_size = config.DATA_WINDOW_LENGTH
+        self._history_size = Config.DATA_WINDOW_LENGTH
 
         self._setup_data()
 
@@ -94,7 +94,7 @@ class RocketData():
 
         # Atualização de dados
         for field, _ in TelemetryPacket._fields_:
-            if field in config.TRACKABLE_DATA:
+            if field in Config.TRACKABLE_DATA:
                 try:
                     value = getattr(self._latest_packet, field)
                 except KeyError as err:

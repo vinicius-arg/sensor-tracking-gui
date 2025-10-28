@@ -1,10 +1,8 @@
 import serial.tools.list_ports
 
 from zenithgui.model import RocketData
-from zenithgui.util.write_csv import write_csv
-from zenithgui.config import messages as msg
-
-from zenithgui.config import config
+from zenithgui.util import FileUtils
+from zenithgui.config import Messages as msg, Config
 
 class MainModel():
     def __init__(self):
@@ -25,7 +23,7 @@ class MainModel():
         from zenithgui.communication import SerialReader, SerialSimulation
         if not self._serial_reader or not self._serial_reader.is_alive():
             # Passando canal de comunicação (queue) para o produtor
-            if config.DEV_MODE:
+            if Config.DEV_MODE:
                 self._serial_reader = SerialSimulation(port, baudrate, queue, force)
             else:
                 self._serial_reader = SerialReader(port, baudrate, queue, force)
@@ -83,5 +81,5 @@ class MainModel():
         return available_ports
     
     def save_data_to_csv(self, data: dict, path:str):
-        success = write_csv(data, path)
+        success = FileUtils.write_csv(data, path)
         return success
