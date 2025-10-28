@@ -48,7 +48,7 @@ class SensorDetailsPage(QDialog):
 
 
     def __apply_styles(self):
-        ThemeUtils.setup_and__apply_stylesheets(self)
+        ThemeUtils.setup_and_apply_stylesheets(self)
 
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))
