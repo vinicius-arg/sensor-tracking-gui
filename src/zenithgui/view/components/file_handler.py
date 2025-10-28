@@ -12,34 +12,39 @@ class FileHandler(QWidget):
         super().__init__()
         self.recording = rec
         
-        self._create_widget()
-        self._create_layout()
-        self._connect_signals()
-        self._apply_styles()
+        self.__create_widget()
+        self.__create_layout()
+        self.__connect_signals()
+        self.__apply_styles()
 
         self.setLayout(self.content)
 
-    def _create_widget(self):
+
+    def __create_widget(self):
         self.file_path = QLineEdit()
         self.dir_selector = QPushButton(self.OPEN_DIR_SELECTOR_BUTTON_TEXT)
 
-    def _create_layout(self):
+
+    def __create_layout(self):
         self.content = QHBoxLayout()
 
         self.content.addWidget(self.file_path)
         self.content.addWidget(self.dir_selector)
 
-    def _connect_signals(self):
-        self.dir_selector.pressed.connect(self._get_dir)
 
-    def _apply_styles(self):
+    def __connect_signals(self):
+        self.dir_selector.pressed.connect(self.__get_dir)
+
+
+    def __apply_styles(self):
         self.file_path.setPlaceholderText(self.PATH_LABEL_PLACEHOLDER)
         self.file_path.setReadOnly(True)
 
         self.file_path.setProperty("class", "input")
         self.dir_selector.setProperty("class", "menuBtn")
 
-    def _get_dir(self):
+
+    def __get_dir(self):
         self.dialog = QFileDialog()
 
         palette = self.dialog.palette()
@@ -59,6 +64,7 @@ class FileHandler(QWidget):
         if path:
             self.file_path.setText(path)
             self.path = path
+
 
     def get_file_path(self):
         return self.path

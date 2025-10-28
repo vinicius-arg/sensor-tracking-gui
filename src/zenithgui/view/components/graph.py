@@ -25,16 +25,14 @@ class Graph(QWidget):
         self.graph = None
         self.graph_name = name
 
-        self._create_widget()
-        self._create_layout()
-        self._apply_styles()
+        self.__create_widget()
+        self.__create_layout()
+        self.__apply_styles()
 
         Graph.graph_id += 1
 
-    def get_graph(self):
-        return self.graph
 
-    def _create_widget(self):
+    def __create_widget(self):
         self.frame = QFrame()
         self.name = QLabel(self.graph_name)
 
@@ -51,7 +49,8 @@ class Graph(QWidget):
             current=self.current
             )
 
-    def _create_layout(self):
+
+    def __create_layout(self):
         self.graph_layout = QVBoxLayout(self.frame)
 
         self.header_layout = QHBoxLayout()
@@ -62,10 +61,15 @@ class Graph(QWidget):
         self.graph_layout.addLayout(self.header_layout)
         self.graph_layout.addWidget(self.plotter)
             
-    def _apply_styles(self):
+            
+    def __apply_styles(self):
         self.frame.setObjectName("GraphFrame")
 
         self.plotter.showGrid(x=True, y=True, alpha=0.3)
         self.plotter.setYRange(-10, 10)
 
         self.current.setProperty("class", "currentValue")
+
+
+    def get_graph(self):
+        return self.graph

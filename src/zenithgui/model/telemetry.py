@@ -55,15 +55,10 @@ class RocketData():
         self._latest_packet = TelemetryPacket()
         self._history_size = Config.DATA_WINDOW_LENGTH
 
-        self._setup_data()
+        self.__setup_data()
 
-    def get_data(self):
-        return self._data
-    
-    def get_latest_packet(self):
-        return self._latest_packet
 
-    def _setup_data(self):
+    def __setup_data(self):
         self._data = {
             "status": int(),
             "temperature": deque(maxlen=self._history_size),
@@ -81,8 +76,18 @@ class RocketData():
             "battery": deque(maxlen=self._history_size)
         }
 
-    def _update_field(self, value, field: deque):
+
+    def __update_field(self, value, field: deque):
         field.append(value)
+
+
+    def get_data(self):
+        return self._data
+    
+
+    def get_latest_packet(self):
+        return self._latest_packet
+
 
     def update_data(self, raw_bytes: bytes):
         """Atualiza o estado com um novo pacote de dados a partir de bytes brutos.
@@ -103,7 +108,8 @@ class RocketData():
                 if field == "status":
                     self._data["status"] = value
                 else:
-                    self._update_field(value, self._data[field])
+                    self.__update_field(value, self._data[field])
+
 
 def main():
     r = RocketData()

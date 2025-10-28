@@ -13,14 +13,17 @@ class QDisc(QWidget):
         self.color = Qt.gray
         self.state = state
 
+
     def __update_color(self):
         self.color = Qt.green if self.state else Qt.gray
+
 
     def set_state(self, state: bool):
         if state != self.state:
             self.state = state
             self.__update_color()
             self.update()
+
 
     def paintEvent(self, event):
         painter = QPainter(self)
@@ -45,9 +48,11 @@ class StatusIndicator(QWidget):
         self.__create_widget()
         self.__create_layout()
 
+
     def __create_widget(self):
         self.light = QDisc(self.size)
         self.label = QLabel(self.text)
+
 
     def __create_layout(self):
         self.content = QHBoxLayout()
@@ -55,6 +60,7 @@ class StatusIndicator(QWidget):
         self.content.addWidget(self.label)
 
         self.setLayout(self.content)
+
 
     def set_state(self, state: bool):
         self.light.set_state(state)
@@ -72,11 +78,13 @@ class StatusMonitor(QWidget):
         self.__create_layout()
         self.__apply_styles()
 
+
     def __create_widget(self):
         for data in Config.STATUS_DATA:
             item = StatusIndicator(size=20, text=FormatUtils.get_fancy_name(data, Config.STATUS_DATA_ALIAS))
             self.status_indicators[data] = item
     
+
     def __create_layout(self):
         self.content = QHBoxLayout()
         for _, value in self.status_indicators.items():
@@ -85,9 +93,11 @@ class StatusMonitor(QWidget):
         self.content.addStretch()
         self.setLayout(self.content)
 
+
     def __apply_styles(self):
         for _, value in self.status_indicators.items():
             value.label.setProperty("class", "statusLabel")
+
 
     def update_component(self):
         for key, value in self.status.items():

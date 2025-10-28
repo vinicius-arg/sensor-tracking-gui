@@ -29,12 +29,21 @@ class SerialSimulation(Thread):
         self.is_running = False
         self.is_paused = True
 
-        self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+        self.__serial_connect(self._port_name, self._baudrate, self._force_connection)
+
+
+    def __serial_connect(self, port, baudrate=9600, force=False):
+        """Realiza a conexão com a porta serial passada como argumento.
+        """
+        print(f"Conectado ao simulador: port={port}, bdr={baudrate}, f={force}")
+        self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
+        self.is_connected = True
+
 
     def run(self):
         """Executado quando self.start() é chamado.
         """
-        #self._serial_connect(self._port_name, self._baudrate, self._force_connection)
+        #self.__serial_connect(self._port_name, self._baudrate, self._force_connection)
         self.is_running = True
         self.is_paused = False
 
@@ -48,6 +57,7 @@ class SerialSimulation(Thread):
                     time.sleep(0.1)
             else:
                 time.sleep(0.1)
+
 
     def generate_test_data(self):
         p = telemetry.TelemetryPacket()
@@ -63,27 +73,20 @@ class SerialSimulation(Thread):
         p.crc = 0xa04c
         return bytes(p)
 
-    def _bin(self, n: float):
-        import struct
-        return struct.unpack('!I', struct.pack('!f', n))[0]
-
-    def _serial_connect(self, port, baudrate=9600, force=False):
-        """Realiza a conexão com a porta serial passada como argumento.
-        """
-        print(f"Conectado ao simulador: port={port}, bdr={baudrate}, f={force}")
-        self.packet_queue.put(Packet.as_status("Conexão bem sucedida!"))
-        self.is_connected = True
 
     def get_rocket_data(self):
         return self._rocket_data.get_data()
     
+
     def pause(self):
         self._pause_event.set()
         self.is_paused = True
 
+
     def resume(self):
         self._pause_event.clear()
         self.is_paused = False
+
 
     def disconnect(self):
         """Para a thread e fecha a conexão.
@@ -92,6 +95,7 @@ class SerialSimulation(Thread):
         self.is_connected = False
         self.is_running = False
         self.join()
+
 
     @staticmethod
     def list_available_ports() -> list[str]:
@@ -111,6 +115,7 @@ class SerialSimulation(Thread):
             
         return available_ports
     
+
 def main():
     s = SerialSimulation("COM3", 9600, Queue(), False)
     print(s.generate_test_data())

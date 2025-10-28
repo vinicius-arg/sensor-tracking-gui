@@ -15,18 +15,20 @@ class MainPresenter:
         self.queue_timer = QTimer()
         self.update_ui_timer = QTimer()
 
-        self._connect_signals()
+        self.__connect_signals()
 
-    def _connect_signals(self):
-        self.view.connection_requested.connect(self._handle_connection_request)
-        self.view.available_ports_requested.connect(self._handle_ports_request)
-        self.queue_timer.timeout.connect(self._process_queue)
+
+    def __connect_signals(self):
+        self.view.connection_requested.connect(self.__handle_connection_request)
+        self.view.available_ports_requested.connect(self.__handle_ports_request)
+        self.queue_timer.timeout.connect(self.__process_queue)
         self.update_ui_timer.timeout.connect(self.__update_ui)
         self.view.start_tracking.connect(self.start_tracking)
         self.view.pause_tracking.connect(self.pause_tracking)
         self.view.stop_tracking.connect(self.stop_tracking)
 
-    def _process_queue(self):
+
+    def __process_queue(self):
         try:
             packet: Packet = self.packet_queue.get_nowait()
             if packet.type == PacketType.DATA:
@@ -40,11 +42,34 @@ class MainPresenter:
         except Empty:
             pass
 
+
+    def __handle_ports_request(self):
+        available_ports = self.model.list_available_ports()
+        self.view.load_available_ports(available_ports)
+
+
+    def __handle_connection_request(self, port, baudrate, force=False):
+        self.model.connect_to_lora(port, baudrate, self.packet_queue, force)
+
+        result = self.packet_queue.get()
+        success = result.type == PacketType.STATUS
+        self.view.show_info_as_popup(success, result.payload)
+
+        if success:
+            self.view.goto_dashboard_page()
+            self.set_buttons_state()
+
+
+    def __update_ui(self):
+        self.view.update_ui()
+
+
     def start_tracking(self):
         self.model.start_tracking()
         self.queue_timer.start(Config.PACKET_QUEUE_MS_TIME)
         self.update_ui_timer.start(Config.UI_UPDATE_MS_TIME)
         self.set_buttons_state()
+
 
     def stop_tracking(self):
         if self.model.reader_is_running():
@@ -68,6 +93,7 @@ class MainPresenter:
             else:
                 self.view.show_info_as_notification(True, msg.NOTIFICATION_TRACKING_STOPPED)
 
+
     def pause_tracking(self):
         self.queue_timer.stop()
         self.update_ui_timer.stop()
@@ -75,6 +101,7 @@ class MainPresenter:
         self.set_buttons_state()
 
         self.view.show_info_as_notification(True, msg.NOTIFICATION_TRACKING_PAUSED)
+
 
     def set_buttons_state(self):
         state = self.model.reader_is_running()
@@ -84,21 +111,3 @@ class MainPresenter:
         self.view.start_btn.setEnabled(not state)
         self.view.checkbox.setEnabled(not state)
         self.view.file_handler.setEnabled(not state)
-
-    def _handle_ports_request(self):
-        available_ports = self.model.list_available_ports()
-        self.view.load_available_ports(available_ports)
-
-    def _handle_connection_request(self, port, baudrate, force=False):
-        self.model.connect_to_lora(port, baudrate, self.packet_queue, force)
-
-        result = self.packet_queue.get()
-        success = result.type == PacketType.STATUS
-        self.view.show_info_as_popup(success, result.payload)
-
-        if success:
-            self.view.goto_dashboard_page()
-            self.set_buttons_state()
-
-    def __update_ui(self):
-        self.view.update_ui()

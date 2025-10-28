@@ -17,6 +17,7 @@ class Sender:
         queue.put(note_packet)
         queue.put(packet)
 
+
     @staticmethod
     def send_packet(queue: Queue, packet: Packet):
         """Envia pacotes quaisquer para o presenter.

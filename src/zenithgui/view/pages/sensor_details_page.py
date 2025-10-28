@@ -17,16 +17,18 @@ class SensorDetailsPage(QDialog):
         self.graphs: dict[str, Graph] = {}
         self.update_graphs_timer = QTimer()
 
-        self._create_widgets()
-        self._create_layouts()
-        self._connect_signals()
-        self._apply_styles()
+        self.__create_widgets()
+        self.__create_layouts()
+        self.__connect_signals()
+        self.__apply_styles()
 
-    def _create_widgets(self):
+
+    def __create_widgets(self):
         self.title = QLabel(self.name)
         self.graph_grid = QGridLayout()
         
-    def _create_layouts(self):
+
+    def __create_layouts(self):
         self.content = QVBoxLayout()
         self.content.addWidget(self.title)
         self.content.addLayout(self.graph_grid)
@@ -36,14 +38,17 @@ class SensorDetailsPage(QDialog):
 
         self.setLayout(self.content)
 
-    def _update_graphs(self):
+
+    def __update_graphs(self):
         self.parent_page.update_graphs(self.graphs)
 
-    def _connect_signals(self):
-        self.update_graphs_timer.timeout.connect(self._update_graphs)
 
-    def _apply_styles(self):
-        ThemeUtils.setup_and_apply_stylesheets(self)
+    def __connect_signals(self):
+        self.update_graphs_timer.timeout.connect(self.__update_graphs)
+
+
+    def __apply_styles(self):
+        ThemeUtils.setup_and__apply_stylesheets(self)
 
         palette = self.palette()
         palette.setColor(QPalette.ColorRole.Window, QColor("#1e1e1e"))

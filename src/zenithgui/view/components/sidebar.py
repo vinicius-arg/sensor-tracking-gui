@@ -11,14 +11,15 @@ class SideBar(QFrame):
         self.parent_page = parent
         self.sensors = Config.ROCKET_DATA_MAP
 
-        self._create_widgets()
-        self._create_layouts()
-        self._connect_signals()
-        self._apply_styles()
+        self.__create_widgets()
+        self.__create_layouts()
+        self.__connect_signals()
+        self.__apply_styles()
 
         self.setLayout(self.content)
 
-    def _create_widgets(self):
+
+    def __create_widgets(self):
         self.app_name = QLabel(Config.APP_NAME)
         self.subtitle = QLabel(Config.APP_SUBTITLE)
         
@@ -32,7 +33,8 @@ class SideBar(QFrame):
             button.setProperty("class", "sidebarButton")
             self.sensors_buttons.append(button)
 
-    def _create_layouts(self):
+
+    def __create_layouts(self):
         self.content = QVBoxLayout(self)
 
         self.content.addWidget(self.app_name)
@@ -43,11 +45,13 @@ class SideBar(QFrame):
         for sidebar_btn in self.sensors_buttons:
             self.content.addWidget(sidebar_btn)
 
-    def _connect_signals(self):
-        for button in self.sensors_buttons:
-            button.clicked.connect(partial(self._show_sensor_details, button.text()))
 
-    def _apply_styles(self):
+    def __connect_signals(self):
+        for button in self.sensors_buttons:
+            button.clicked.connect(partial(self.__show_sensor_details, button.text()))
+
+
+    def __apply_styles(self):
         self.subtitle.setWordWrap(True)
         self.content.setContentsMargins(15, 15, 15, 15)
         self.setMinimumWidth(200)
@@ -56,7 +60,8 @@ class SideBar(QFrame):
         self.subtitle.setObjectName("AppSubTitle")
         self.setObjectName("SideBar")
         
-    def _show_sensor_details(self, name):
+        
+    def __show_sensor_details(self, name):
         graph_keys: list = self.sensors[name]
 
         dlg = SensorDetailsPage(self.parent_page, name, graph_keys)

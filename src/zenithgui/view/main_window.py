@@ -26,21 +26,23 @@ class MainWindow(QMainWindow):
         self.stack.addWidget(self.connection_page)
         self.stack.addWidget(self.dashboard_page)
 
-        self._promote_signals()
-        self._promote_buttons()
+        self.__promote_signals()
+        self.__promote_buttons()
 
         # Variáveis promovidas
         self.notification_label = self.dashboard_page.notification_label
         self.history = self.dashboard_page.full_history
 
-    def _promote_buttons(self):
+
+    def __promote_buttons(self):
         self.start_btn = self.dashboard_page.start_btn
         self.pause_btn = self.dashboard_page.pause_btn
         self.stop_btn = self.dashboard_page.stop_btn
         self.checkbox = self.dashboard_page.checkbox
         self.file_handler = self.dashboard_page.file_handler
 
-    def _promote_signals(self):
+
+    def __promote_signals(self):
         """Torna sinais de páginas internas à camada view visíveis a camadas superiores
         da aplicação. Reduz acoplamento."""
 
@@ -50,15 +52,19 @@ class MainWindow(QMainWindow):
         self.pause_tracking = self.dashboard_page.pause_tracking
         self.stop_tracking = self.dashboard_page.stop_tracking
 
+
     def goto_dashboard_page(self):
         self.stack.setCurrentWidget(self.dashboard_page)
+
 
     def update_graphs(self, rocket_data):
         self.dashboard_page.update_data(rocket_data)
 
+
     def show_info_as_popup(self, success, message):
         dlg = MessageWindow("Information", message, success)
         dlg.exec_()
+
 
     def show_info_as_notification(self, success, message):
         if success:
@@ -75,6 +81,7 @@ class MainWindow(QMainWindow):
             Config.NOTIFICATION_DISAPPEAR_MS_TIME,
             lambda: self.notification_label.setText(""))
 
+
     def closeEvent(self, a0):
         """Chamado automaticamente quando o usuário fecha o programa.
            Encerra as threads e salva o monitoramento, caso esteja habilitado.
@@ -83,11 +90,14 @@ class MainWindow(QMainWindow):
 
         return super().closeEvent(a0)
 
+
     def load_available_ports(self, ports):
         self.connection_page.port_selector.addItems(ports)
+
 
     def align_center(self, screen, width, height):
         return ((screen.width() - width) // 2, (screen.height() - height) // 2)
     
+
     def update_ui(self):
         self.dashboard_page.update_page()

@@ -27,12 +27,13 @@ class Dashboard(QWidget):
         self.sensors_alias = Config.ROCKET_DATA_ALIAS        
         self.full_history: dict = {}
 
-        self._create_widgets()
-        self._create_layouts()
-        self._connect_signals()
-        self._apply_styles()
+        self.__create_widgets()
+        self.__create_layouts()
+        self.__connect_signals()
+        self.__apply_styles()
 
-    def _create_widgets(self):
+
+    def __create_widgets(self):
         self.start_btn = QPushButton(self.START_TRACKING_TEXT)
         self.pause_btn = QPushButton(self.PAUSE_TRACKING_TEXT)
         self.stop_btn = QPushButton(self.STOP_TRACKING_TEXT)
@@ -43,7 +44,8 @@ class Dashboard(QWidget):
 
         self.notification_label = QLabel()
 
-    def _create_layouts(self):
+
+    def __create_layouts(self):
         self.content = QVBoxLayout()
         self.control_bar = QHBoxLayout()
         self.graph_grid = QGridLayout()
@@ -64,15 +66,14 @@ class Dashboard(QWidget):
 
         self.setLayout(self.content)
 
-    def _connect_signals(self):
+
+    def __connect_signals(self):
         self.start_btn.pressed.connect(self.start_tracking.emit)
         self.pause_btn.pressed.connect(self.pause_tracking.emit)
         self.stop_btn.pressed.connect(self.stop_tracking.emit)
 
-    def update_component(self):
-        self.status_monitor.update_component()
 
-    def _apply_styles(self):
+    def __apply_styles(self):
         self.start_btn.setProperty("class", "menuBtn")
         self.pause_btn.setProperty("class", "menuBtn")
         self.stop_btn.setProperty("class", "menuBtn")
@@ -84,3 +85,7 @@ class Dashboard(QWidget):
         self.notification_label.setObjectName("Info")
 
         self.graph_grid.setSpacing(15)
+
+
+    def update_component(self):
+            self.status_monitor.update_component()
