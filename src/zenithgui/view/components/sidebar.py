@@ -1,0 +1,69 @@
+from PyQt5.QtWidgets import QLabel, QFrame, QPushButton, QVBoxLayout
+from functools import partial
+
+from zenithgui.view.pages.sensor_details_page import SensorDetailsPage
+from zenithgui.config import Config
+
+class SideBar(QFrame):
+    def __init__(self, parent):
+        super().__init__()
+
+        self.parent_page = parent
+        self.sensors = Config.ROCKET_DATA_MAP
+
+        self.__create_widgets()
+        self.__create_layouts()
+        self.__connect_signals()
+        self.__apply_styles()
+
+        self.setLayout(self.content)
+
+
+    def __create_widgets(self):
+        self.app_name = QLabel(Config.APP_NAME)
+        self.subtitle = QLabel(Config.APP_SUBTITLE)
+        
+        self.horizontal_bar = QFrame()
+        self.horizontal_bar.setFrameShape(QFrame.HLine)
+        self.horizontal_bar.setFrameShadow(QFrame.Sunken)
+
+        self.sensors_buttons: list[QPushButton] = []
+        for sensor in self.sensors.keys():
+            button = QPushButton(sensor)
+            button.setProperty("class", "sidebarButton")
+            self.sensors_buttons.append(button)
+
+
+    def __create_layouts(self):
+        self.content = QVBoxLayout(self)
+
+        self.content.addWidget(self.app_name)
+        self.content.addWidget(self.subtitle)
+        self.content.addWidget(self.horizontal_bar)
+        self.content.addStretch()
+
+        for sidebar_btn in self.sensors_buttons:
+            self.content.addWidget(sidebar_btn)
+
+
+    def __connect_signals(self):
+        for button in self.sensors_buttons:
+            button.clicked.connect(partial(self.__show_sensor_details, button.text()))
+
+
+    def __apply_styles(self):
+        self.subtitle.setWordWrap(True)
+        self.content.setContentsMargins(15, 15, 15, 15)
+        self.setMinimumWidth(200)
+
+        self.app_name.setObjectName("AppTitle")
+        self.subtitle.setObjectName("AppSubTitle")
+        self.setObjectName("SideBar")
+        
+        
+    def __show_sensor_details(self, name):
+        graph_keys: list = self.sensors[name]
+
+        dlg = SensorDetailsPage(self.parent_page, name, graph_keys)
+        
+        dlg.exec_()

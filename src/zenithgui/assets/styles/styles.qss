@@ -1,25 +1,182 @@
+* {
+    font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
+    color: #d6d6d6;
+}
+
 QLabel {
     font-size: 14pt;
-    font-family: Arial, Helvetica, sans-serif;
     font-weight: bold;
     color: #d6d6d6;
 }
 
 QLabel[class="title"] {
     font-size: 16pt;
-    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+    color: #d6d6d6;
+}
+
+QLabel[class="statusLabel"] {
+    font-size: 9pt;
+}
+
+QLabel#AppTitle {
+    font-size: 16pt;
+    font-family: 'BBH Sans Hegarty', Arial, Helvetica, sans-serif;
+    font-weight: bolder;
+    color: #d6d6d6;
+}
+
+QLabel#AppSubTitle {
+    font-size: 12pt;
+    font-weight: lighter;
+}
+
+QCheckBox[class="text"] {
+    font-size: 10pt;
     font-weight: bold;
     color: #d6d6d6;
 }
 
 QPushButton#LoRaConnectButton {
-    background-color: #2d89ef;
+    background-color: #813581;
     color: white;
-    font-size: 14px;
+    font-size: 12pt;
     font-weight: bold;
     padding: 10px 20px;
     border-radius: 12px;
 }
+
 QPushButton#LoRaConnectButton:hover {
-    background-color: #1b5faa;
+    background-color: #6d256d;
+}
+
+QFrame#SideBar {
+    background-color: #813581;
+}
+
+QPushButton[class="menuBtn"] {
+    background-color: #d6d6d6;
+    color: #0c0b0b;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+#StartBtn {
+    background-color: #813581;
+}
+
+#StopBtn {
+    background-color: #742929;
+}
+
+#StartBtn:hover {
+    background-color: #6d256d;
+}
+
+#StopBtn:hover {
+    background-color: #5a1f1f;
+}
+
+QPushButton[class="menuBtn"]:disabled {
+    background-color: #686868;
+    color: #303030;
+}
+
+QPushButton[class="sidebarButton"] {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-family: 'Titillium Web', Arial, Helvetica, sans-serif;
+    background-color: #723072;
+    color: #d6d6d6;
+}
+
+QPushButton[class="sidebarButton"]:hover {
+    background-color: #5c265c;
+}
+
+/* QPushButton[class="sidebarButton"]:active {
+    background-color: #d6d6d6;
+    color: #0c0b0b;
+} */
+
+QLineEdit {
+    background-color: #d6d6d6;
+    color: #0c0b0b;
+}
+
+QCheckBox[class="input"] {
+    color: #d6d6d6;
+}
+
+*[class="input"] {
+    color: #0c0b0b;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+*[class="input"]:disabled {
+    color: #686868;
+}
+
+#GraphFrame QLabel[class="currentValue"] {
+    border: 1px solid #6d256d ;
+    font-size: 12pt;
+    color: #af5faf;
+}
+
+QFileDialog,
+QFileDialog * {
+    background-color: #303030;
+    color: #d6d6d6;
+}
+
+QFileDialog QListView, 
+QFileDialog QTreeView {
+    color: #d6d6d6;
+    background-color: #303030;
+    border: 1px solid #444;
+}
+
+QFileDialog QListView::item:selected, 
+QFileDialog QTreeView::item:selected {
+    background-color: #813581;
+    color: #d6d6d6;
+}
+
+QFileDialog QLineEdit {
+    background-color: #d6d6d6;
+    color: #0c0b0b;
+    border: 1px solid #555;
+    padding: 4px;
+}
+
+QFileDialog QPushButton {
+    background-color: #444;
+    color: #d6d6d6;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+}
+
+QFileDialog QPushButton:hover {
+    background-color: #303030;
+}
+
+QLabel#Info {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+
+QLabel[class="info"] {
+    color: #3c7ac2;
+}
+
+QLabel[class="error"] {
+    color: #cc4b4b;
 }
